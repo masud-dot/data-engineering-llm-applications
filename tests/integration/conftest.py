@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterator
+from dataclasses import replace
 from pathlib import Path
 
 import psycopg
@@ -9,7 +10,8 @@ import pytest
 from psycopg.conninfo import make_conninfo
 
 from llmdata.config import Settings, settings
-from llmdata.db import migrate
+from llmdata.db import migrate, reset
+from llmdata.synthetic import load_claims, plan, write_files
 
 
 @pytest.fixture(scope="session")
@@ -46,3 +48,13 @@ def pg(
         patch.setenv(key, value)
     yield settings()
     patch.undo()
+
+
+@pytest.fixture
+def landed(pg: Settings, tmp_path: Path) -> Settings:
+    """The small day-0 corpus in a fresh landing zone; empty index."""
+    reset(pg.dsn)
+    corpus = plan("small")
+    write_files(corpus, tmp_path)
+    load_claims(pg.source_dsn, corpus["claims"])
+    return replace(pg, data_dir=tmp_path)

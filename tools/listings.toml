@@ -19,3 +19,8 @@
 "4.4" = { file = "src/llmdata/ingest/sources.py", region = "snapshot-source" }
 "4.5" = { file = "src/llmdata/ingest/__init__.py", region = "ingest-stage" }
 "4.6" = { file = "tests/integration/test_ingest.py", region = "replay-test" }
+"5.1" = { file = "src/llmdata/parse/__init__.py", region = "pdf-adapters" }
+"5.2" = { file = "src/llmdata/parse/__init__.py", region = "table-markdown" }
+"5.3" = { file = "src/llmdata/parse/__init__.py", region = "ocr-fallback" }
+"5.4" = { file = "src/llmdata/parse/__init__.py", region = "parse-stage" }
+"5.5" = { file = "tests/unit/test_parse.py", region = "golden-test" }

@@ -323,8 +323,10 @@ def scan_pdf(path: Path, pages: list[list[str]], seed: int) -> None:
 
 def truth(doc: dict[str, Any]) -> list[str]:
     pages = [list(lines) for lines in doc["pages"]]
-    if "table" in doc:
-        pages[0] += [" ".join(row) for row in doc["table"]]
+    if "table" in doc:  # the grid as Markdown, header first
+        rows = ["| " + " | ".join(row) + " |" for row in doc["table"]]
+        rule = "|" + " --- |" * len(doc["table"][0])
+        pages[0] += [rows[0], rule, *rows[1:]]
     total = len(pages)
     return [
         "\n".join([*lines, f"Quillmere Mutual · Page {n} of {total}"])

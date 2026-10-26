@@ -2,26 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
-from pathlib import Path
-
 import pytest
 
 from llmdata import ingest
 from llmdata.config import Settings
-from llmdata.db import connect, reset
+from llmdata.db import connect
 from llmdata.pipeline.context import Context
-from llmdata.synthetic import load_claims, plan, write_files
-
-
-@pytest.fixture
-def landed(pg: Settings, tmp_path: Path) -> Settings:
-    """The small day-0 corpus in a fresh landing zone; empty index."""
-    reset(pg.dsn)
-    corpus = plan("small")
-    write_files(corpus, tmp_path)
-    load_claims(pg.source_dsn, corpus["claims"])
-    return replace(pg, data_dir=tmp_path)
 
 
 # region: replay-test

@@ -90,6 +90,15 @@ as a grid. Limitation: the golden PDFs are single-column and drawn in
 reading order; Chapter 5 adds harder layouts before the book relies on
 these figures.
 
+Re-run on 2026-10-27, after Chapter 5 put both libraries behind the
+parse adapters and made the golden text carry tables as Markdown:
+pypdf 96.65% (min 95.55%), pdfplumber 100% (min 100%), table cells
+kept 100% for both; OCR mean 99.89% (min 99.84%). The pypdf drop is the
+table markup alone. Multi-column layouts are still absent; Chapter 5
+names the limitation, and its third exercise adds a two-column page.
+Full day-0 parse in the build workspace: 520 documents, 50 pages by
+OCR, 144.9 s.
+
 ### S-4 (partial), build workspace
 
 Fake-embedder sample hash
