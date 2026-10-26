@@ -85,8 +85,8 @@ def compare() -> dict[str, object]:
     want = {
         k: v[0][:16] for k, v in file_manifest(cfg.data_dir).items()
     }
-    for row in claim_rows(cfg.source_dsn, live_only=True):
-        item = claim_item(row[0], row[1], row[2])
+    for record in claim_rows(cfg.source_dsn, live_only=True):
+        item = claim_item(record)
         want[item.doc_key] = item.content_hash[:16]
     with connect(cfg.dsn) as conn:
         have = {

@@ -6,9 +6,17 @@ import hashlib
 from collections.abc import Iterator
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
-from llmdata.contracts import Kind, SourceItem
+from psycopg.rows import dict_row
+
+from llmdata.contracts import (
+    ClaimRecord,
+    Kind,
+    Origin,
+    SourceItem,
+    require,
+)
 from llmdata.db import Conn, connect
 from llmdata.pipeline.context import Context
 
@@ -59,7 +67,7 @@ def file_item(
     return SourceItem(
         doc_key=key,
         op="upsert",
-        origin=origin,
+        origin=cast(Origin, origin),
         kind=KINDS[origin],
         content_hash=digest,
         ref=ref,
@@ -67,34 +75,32 @@ def file_item(
     )
 
 
-def claim_item(
-    claim_id: str, region: str, note: str, op: str = "upsert"
-) -> SourceItem:
+def claim_item(record: ClaimRecord) -> SourceItem:
     return SourceItem(
-        doc_key=f"claim:{claim_id}",
-        op="delete" if op == "delete" else "upsert",
+        doc_key=f"claim:{record.claim_id}",
+        op="delete" if record.deleted_at else "upsert",
         origin="claims",
         kind="record",
-        content_hash=sha256(note.encode()),
-        raw=note,
-        meta={"region": region, "roles": ROLES["claims"]},
+        content_hash=sha256(record.note.encode()),
+        raw=record.note,
+        meta={"region": record.region, "roles": ROLES["claims"]},
     )
 
 
 def claim_rows(
     dsn: str, since: datetime | None = None, live_only: bool = False
-) -> list[tuple[Any, ...]]:
+) -> list[ClaimRecord]:
+    """Claims changed since a point, checked against the contract."""
     sql = (
-        "SELECT claim_id, region, note, updated_at, deleted_at"
-        " FROM claims WHERE (%(s)s::timestamptz IS NULL"
+        "SELECT * FROM claims WHERE (%(s)s::timestamptz IS NULL"
         " OR updated_at > %(s)s::timestamptz)"
     )
     if live_only:
         sql += " AND deleted_at IS NULL"
     with connect(dsn, vectors=False) as conn:
-        return conn.execute(
-            sql + " ORDER BY claim_id", {"s": since}
-        ).fetchall()
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql + " ORDER BY claim_id", {"s": since})
+            return require(ClaimRecord, cur.fetchall(), "claim_id")
 
 
 def versions(conn: Conn) -> dict[str, str]:
@@ -114,8 +120,8 @@ class SnapshotSource:
             if known.get(key) != entry[0][:16]:
                 yield file_item(key, entry)
         rows = claim_rows(ctx.settings.source_dsn, live_only=True)
-        for claim_id, region, note, _, _ in rows:
-            item = claim_item(claim_id, region, note)
+        for record in rows:
+            item = claim_item(record)
             if known.get(item.doc_key) != item.content_hash[:16]:
                 yield item
 

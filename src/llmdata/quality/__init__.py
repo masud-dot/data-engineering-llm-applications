@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from llmdata.db import connect
 from llmdata.pipeline.context import Context
+from llmdata.quality.contracts import violations
 
 CHECKS = {
     "documents without chunks": (
@@ -30,6 +31,14 @@ def gate(ctx: Context) -> None:
             row = conn.execute(sql, {"r": ctx.run_id}).fetchone()
             if row and row[0]:
                 failures[name] = int(row[0])
+        broken = violations(conn, ctx.run_id)
+        if broken:
+            failures["contract violations"] = len(broken)
+            for item in broken[:5]:
+                print(
+                    f"contract: {item.key} {item.field}:"
+                    f" {item.message}"
+                )
     if failures:
         raise RuntimeError(f"quality gate failed: {failures}")
     print("quality gate passed")

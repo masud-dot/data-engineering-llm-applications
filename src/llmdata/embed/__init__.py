@@ -44,11 +44,11 @@ def run(ctx: Context) -> None:
             vectors = embedder.embed([r[2] for r in part])
             with conn.cursor() as cur:
                 cur.executemany(
-                    "UPDATE staged_chunks SET embedding = %s"
-                    " WHERE run_id = %s AND doc_key = %s"
-                    " AND ordinal = %s",
+                    "UPDATE staged_chunks SET embedding = %s,"
+                    " embedding_model = %s WHERE run_id = %s"
+                    " AND doc_key = %s AND ordinal = %s",
                     [
-                        (vec, ctx.run_id, key, ordinal)
+                        (vec, embedder.name, ctx.run_id, key, ordinal)
                         for (key, ordinal, _), vec in zip(
                             part, vectors, strict=True
                         )

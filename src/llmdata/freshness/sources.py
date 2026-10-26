@@ -59,13 +59,11 @@ class WatermarkSource:
         since = mark - OVERLAP if mark else None
         top = mark
         rows = claim_rows(ctx.settings.source_dsn, since)
-        for claim_id, region, note, updated, deleted in rows:
+        for record in rows:
+            updated = record.updated_at
             top = max(top, updated) if top else updated
-            gone = deleted is not None
-            item = claim_item(
-                claim_id, region, note, "delete" if gone else "upsert"
-            )
-            if gone:
+            item = claim_item(record)
+            if item.op == "delete":
                 if item.doc_key in known:
                     yield item
             elif known.get(item.doc_key) != item.content_hash[:16]:

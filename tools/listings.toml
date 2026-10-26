@@ -2,3 +2,8 @@
 # drafted.
 [listings]
 "1.1" = { file = "tests/e2e/test_smoke.py", region = "smoke-test" }
+"2.1" = { file = "src/llmdata/contracts/types.py", region = "contract-types" }
+"2.2" = { file = "src/llmdata/contracts/sources.py", region = "claim-record" }
+"2.3" = { file = "src/llmdata/contracts/documents.py", region = "document-chunk" }
+"2.4" = { file = "src/llmdata/contracts/slas.toml", region = "slas" }
+"2.5" = { file = "tests/contract/test_sources.py", region = "contract-test" }

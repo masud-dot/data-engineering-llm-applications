@@ -1,0 +1,30 @@
+# region: slas
+# Freshness and deletion targets for each source.
+# max_lag: how far the index may trail the source.
+# delete_within: how soon a delete or withdrawal must vanish.
+
+[wordings]
+owner = "Product governance"
+max_lag = "P1D"
+delete_within = "PT4H"
+
+[endorsements]
+owner = "Underwriting operations"
+max_lag = "P1D"
+delete_within = "P1D"
+
+[guidelines]
+owner = "Underwriting operations"
+max_lag = "P1D"
+delete_within = "P1D"
+
+[emails]
+owner = "Claims operations"
+max_lag = "PT4H"
+delete_within = "P3D"
+
+[claims]
+owner = "Claims systems"
+max_lag = "PT1H"
+delete_within = "P3D"
+# endregion
