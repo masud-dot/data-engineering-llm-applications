@@ -69,6 +69,7 @@ def pipelines(root: Path) -> list[str]:
     )
 
 
+# region: stage-loader
 def load(
     root: Path,
     name: str,
@@ -98,6 +99,9 @@ def load(
         for key, value in sorted(merged.items())
         if "callable" in value
     ]
+
+
+# endregion
 
 
 def policy(root: Path, until: str | int | None = None) -> Policy:

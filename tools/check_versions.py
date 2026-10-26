@@ -25,10 +25,7 @@ def main() -> int:
             problems.append(
                 f"{name}: {version} != lock {locked.get(name)}"
             )
-    used = (
-        Path("deploy/compose/core.yml").read_text()
-        + Path("deploy/airflow/Dockerfile").read_text()
-    )
+    used = Path("deploy/compose/images.env").read_text()
     for name, ref in wanted["images"].items():
         if ref not in used:
             problems.append(f"image {name}: {ref} not used")

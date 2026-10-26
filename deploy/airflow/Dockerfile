@@ -1,4 +1,6 @@
-FROM apache/airflow:3.3.2-python3.12@sha256:9df9c8be4096b9cc626bd7cb1f2b8c712eef66c59c615f8c7e6200871ca10bd1
+# region: airflow-image
+ARG AIRFLOW_BASE
+FROM ${AIRFLOW_BASE}
 USER root
 RUN apt-get update \
  && apt-get install -y --no-install-recommends tesseract-ocr procps \
@@ -13,3 +15,4 @@ RUN pip install --no-cache-dir uv==0.11.32 \
  && UV_PROJECT_ENVIRONMENT=/opt/venv UV_PYTHON_DOWNLOADS=never \
     uv sync --frozen --no-dev --extra local --no-install-project \
     --no-cache --python 3.12
+# endregion

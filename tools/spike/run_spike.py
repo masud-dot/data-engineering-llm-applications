@@ -18,6 +18,7 @@ from llmdata.embed.fake import RECORDED_SAMPLE_HASH  # noqa: E402
 
 OUT = Path("spike")
 COMPOSE = ("docker compose -p llmdata -f deploy/compose/core.yml"
+           " --env-file deploy/compose/images.env"
            " --env-file deploy/compose/.env")
 AIRFLOW = f"{COMPOSE} exec -T airflow"
 PSQL = f"{COMPOSE} exec -T postgres psql -U llmdata -At"

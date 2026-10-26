@@ -1,2 +1,4 @@
+# region: smoke-stage
 chapter = 3
 callable = "llmdata.pipeline.smoke:run"
+# endregion

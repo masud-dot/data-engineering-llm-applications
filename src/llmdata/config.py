@@ -6,8 +6,6 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-LOCAL = "postgresql://llmdata@localhost:55432/"
-
 
 @dataclass(frozen=True)
 class Settings:
@@ -21,8 +19,8 @@ class Settings:
 def settings() -> Settings:
     env = os.environ.get
     return Settings(
-        dsn=env("LLMDATA_DSN", LOCAL + "llmdata"),
-        source_dsn=env("LLMDATA_SOURCE_DSN", LOCAL + "source"),
+        dsn=env("LLMDATA_DSN", "dbname=llmdata"),
+        source_dsn=env("LLMDATA_SOURCE_DSN", "dbname=source"),
         data_dir=Path(env("LLMDATA_DATA_DIR", "data")),
         pipelines_dir=Path(env("LLMDATA_PIPELINES_DIR", "pipelines")),
         model_dir=Path(env("LLMDATA_MODEL_DIR", "models")),

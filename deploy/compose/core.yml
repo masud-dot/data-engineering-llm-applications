@@ -1,7 +1,13 @@
+# region: compose-postgres
 name: llmdata
+x-pg: &pg
+  PGHOST: postgres
+  PGPORT: "5432"
+  PGUSER: llmdata
+  PGPASSWORD: ${POSTGRES_PASSWORD:?run make up}
 services:
   postgres:
-    image: pgvector/pgvector:pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d
+    image: ${POSTGRES_IMAGE:?pass --env-file images.env}
     environment:
       POSTGRES_USER: llmdata
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run make up}
@@ -9,43 +15,29 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ../sql/init:/docker-entrypoint-initdb.d:ro
-    ports:
-      - "127.0.0.1:55432:5432"
+    ports: ["127.0.0.1:55432:5432"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U llmdata -d llmdata"]
       interval: 5s
-      timeout: 5s
       retries: 30
+# endregion
+# region: compose-airflow
   airflow:
     image: llmdata-airflow:local
     build:
       context: ../..
       dockerfile: deploy/airflow/Dockerfile
+      args:
+        AIRFLOW_BASE: ${AIRFLOW_BASE:?pass --env-file images.env}
     command: standalone
     user: "${AIRFLOW_UID:-50000}:0"
     depends_on:
-      postgres:
-        condition: service_healthy
+      postgres: {condition: service_healthy}
+    env_file: airflow.env
     environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: >-
-        postgresql+psycopg2://llmdata:${POSTGRES_PASSWORD}@postgres:5432/airflow
-      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
-      AIRFLOW__CORE__PARALLELISM: "4"
-      AIRFLOW__API__WORKERS: "1"
+      <<: *pg
       AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET}
       AIRFLOW__API__SECRET_KEY: ${AIRFLOW_SECRET_KEY}
-      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "True"
-      AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL: "30"
-      PYTHONPATH: /opt/llmdata/src
-      LLMDATA_DSN: >-
-        postgresql://llmdata:${POSTGRES_PASSWORD}@postgres:5432/llmdata
-      LLMDATA_SOURCE_DSN: >-
-        postgresql://llmdata:${POSTGRES_PASSWORD}@postgres:5432/source
-      LLMDATA_DATA_DIR: /opt/llmdata/data
-      LLMDATA_PIPELINES_DIR: /opt/llmdata/pipelines
-      LLMDATA_MODEL_DIR: /opt/llmdata/models
       LLMDATA_UNTIL: ${UNTIL:-ch20}
       LLMDATA_PROFILE: ${PROFILE:-}
     volumes:
@@ -54,8 +46,8 @@ services:
       - ../../pipelines:/opt/llmdata/pipelines:ro
       - ../../data:/opt/llmdata/data
       - models:/opt/llmdata/models
-    ports:
-      - "127.0.0.1:8080:8080"
+    ports: ["127.0.0.1:8080:8080"]
 volumes:
   pgdata:
   models:
+# endregion

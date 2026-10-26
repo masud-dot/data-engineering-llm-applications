@@ -45,3 +45,9 @@ def test_skeleton_pipeline_runs() -> None:
 
 
 # endregion
+
+
+@pytest.mark.chapter(3)
+@pytest.mark.usefixtures("stack")
+def test_skeleton_pipeline_runs_end_to_end() -> None:
+    assert pipeline(["run", "documents", "--until", "ch03"]) == 0

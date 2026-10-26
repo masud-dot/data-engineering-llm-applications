@@ -19,6 +19,8 @@ COMPOSE = [
     "-f",
     "deploy/compose/core.yml",
     "--env-file",
+    "deploy/compose/images.env",
+    "--env-file",
     "deploy/compose/.env",
 ]
 

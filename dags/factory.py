@@ -25,31 +25,26 @@ ENV = {
 
 def build(name: str) -> DAG:
     rules = spec.policy(ROOT, UNTIL)
-    with DAG(
-        dag_id=name,
-        schedule=None,
-        start_date=datetime(2026, 1, 1, tzinfo=UTC),
-        catchup=False,
-        max_active_runs=1,
-        tags=["llmdata"],
-    ) as dag:
-        previous = None
-        for stage in spec.load(ROOT, name, UNTIL, PROFILE):
-            task = BashOperator(
-                task_id=stage.name,
-                bash_command=(
-                    f"{PYTHON} -m llmdata.pipeline"
-                    f" stage {name} {stage.name}"
-                ),
-                env=ENV,
-                append_env=True,
-                retries=rules.retries,
-                retry_delay=timedelta(seconds=rules.retry_delay_s),
-                execution_timeout=timedelta(seconds=rules.timeout_s),
-            )
-            if previous is not None:
-                previous >> task
-            previous = task
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    dag = DAG(
+        name, schedule=None, start_date=start, max_active_runs=1
+    )
+    previous = None
+    for stage in spec.load(ROOT, name, UNTIL, PROFILE):
+        task = BashOperator(
+            task_id=stage.name,
+            dag=dag,
+            bash_command=f"{PYTHON} -m llmdata.pipeline stage"
+            f" {name} {stage.name}",
+            env=ENV,
+            append_env=True,
+            retries=rules.retries,
+            retry_delay=timedelta(seconds=rules.retry_delay_s),
+            execution_timeout=timedelta(seconds=rules.timeout_s),
+        )
+        if previous is not None:
+            previous >> task
+        previous = task
     return dag
 
 

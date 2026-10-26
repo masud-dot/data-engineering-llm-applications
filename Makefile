@@ -9,12 +9,12 @@ DAY ?= 0
 CHANGES ?= update:5,soft:2,hard:1
 export UNTIL
 COMPOSE := docker compose -p llmdata -f deploy/compose/core.yml \
-	--env-file $(ENVFILE)
+	--env-file deploy/compose/images.env --env-file $(ENVFILE)
 UV := uv run --frozen
-HOSTPG = postgresql://llmdata:$(POSTGRES_PASSWORD)@localhost:55432
-export LLMDATA_DSN ?= $(HOSTPG)/llmdata
-export LLMDATA_SOURCE_DSN ?= $(HOSTPG)/source
-export LLMDATA_AIRFLOW_DSN ?= $(HOSTPG)/airflow
+export PGHOST ?= localhost
+export PGPORT ?= 55432
+export PGUSER ?= llmdata
+export PGPASSWORD ?= $(POSTGRES_PASSWORD)
 
 .PHONY: up down clean-all reset data run run-local lint types test \
 	verify index-hash watermark spike psql

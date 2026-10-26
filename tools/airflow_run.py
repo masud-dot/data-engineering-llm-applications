@@ -13,7 +13,8 @@ from airflow_wait import COMPOSE
 
 
 def state(dag: str, run_id: str) -> str | None:
-    with psycopg.connect(os.environ["LLMDATA_AIRFLOW_DSN"]) as conn:
+    dsn = os.environ.get("LLMDATA_AIRFLOW_DSN", "dbname=airflow")
+    with psycopg.connect(dsn) as conn:
         row = conn.execute(
             "SELECT state FROM dag_run"
             " WHERE dag_id = %s AND run_id = %s",

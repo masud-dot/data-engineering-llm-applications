@@ -7,3 +7,9 @@
 "2.3" = { file = "src/llmdata/contracts/documents.py", region = "document-chunk" }
 "2.4" = { file = "src/llmdata/contracts/slas.toml", region = "slas" }
 "2.5" = { file = "tests/contract/test_sources.py", region = "contract-test" }
+"3.1" = { file = "deploy/compose/core.yml", region = "compose-postgres" }
+"3.2" = { file = "deploy/compose/core.yml", region = "compose-airflow" }
+"3.3" = { file = "deploy/airflow/Dockerfile", region = "airflow-image" }
+"3.4" = { file = "pipelines/documents/00-smoke.toml", region = "smoke-stage" }
+"3.5" = { file = "src/llmdata/pipeline/spec.py", region = "stage-loader" }
+"3.6" = { file = "dags/factory.py", region = "dag-factory" }
