@@ -20,7 +20,7 @@ failed check keeps its row and gains a corrective action and a rerun.
 | S-3 Parser choice | Build workspace; GitHub Actions | b9affca; c9a75e4 | 2026-10-26 | PASS |
 | S-4 Embeddings | GitHub Actions | c9a75e4 | 2026-10-26 | PASS |
 | S-5 Freshness and recovery | GitHub Actions | c9a75e4 | 2026-10-26 | PASS |
-| S-6 CI and hygiene | GitHub Actions | c9a75e4 | 2026-10-26 | PASS after digest pinning, see below |
+| S-6 CI and hygiene | GitHub Actions | 518481a | 2026-10-26 | PASS |
 
 Deviation, approved by the author on 26 Oct 2026: the laptop run is
 deferred. The author's network could not reach Docker Hub or Ubuntu's
@@ -55,9 +55,11 @@ Other timings: cold `make up` with image build 81.3 s; `make data`
 
 Images pinned on 26 Oct 2026, from the digests the run reported:
 `pgvector/pgvector:pg17@sha256:ac08538c…a75d` and
-`apache/airflow:3.3.2-python3.12@sha256:9df9c8be…0bd1`. CI now runs
-`tools/check_versions.py --require-digests`; the result of that run is
-recorded below when it completes.
+`apache/airflow:3.3.2-python3.12@sha256:9df9c8be…0bd1`. The run at commit
+518481a passed with `tools/check_versions.py --require-digests`, the
+secret scan (gitleaks 8.30.1, no leaks), lint, `mypy --strict`, the
+tests and all 17 spike checks again (peak memory 1.71 GiB; full run
+168.0 s).
 
 ### S-3, build workspace, 2026-10-26 (CI repeats it on every push)
 
