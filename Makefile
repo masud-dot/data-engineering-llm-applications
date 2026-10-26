@@ -17,7 +17,7 @@ export LLMDATA_SOURCE_DSN ?= $(HOSTPG)/source
 export LLMDATA_AIRFLOW_DSN ?= $(HOSTPG)/airflow
 
 .PHONY: up down clean-all reset data run run-local lint types test \
-	verify index-hash watermark spike
+	verify index-hash watermark spike psql
 
 $(ENVFILE):
 	@umask 077; { \
@@ -66,6 +66,9 @@ verify: lint types test
 
 verify-%:
 	$(UV) pytest -q --until $*
+
+psql:
+	$(COMPOSE) exec postgres psql -U llmdata -d llmdata
 
 index-hash:
 	@$(UV) python -m llmdata.index hash
