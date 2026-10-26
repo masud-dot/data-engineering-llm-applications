@@ -218,7 +218,8 @@ def s4() -> None:
     record("S-4", "local model loads from cache with no network",
            "dims=[384]" in out and "offline=True" in out, out[-100:])
     names = [line.split("=", 1)[0] for line in
-             sh(f"{AIRFLOW} env", check=False).splitlines()]
+             sh(f"{AIRFLOW} sh -c 'env | cut -d= -f1'",
+                check=False).splitlines()]
     keys = [n for n in names
             if re.search(r"OPENAI|ANTHROPIC|API_KEY|HF_TOKEN", n)]
     record("S-4", "no API key in the stack", not keys,
