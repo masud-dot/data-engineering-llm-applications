@@ -22,12 +22,25 @@ failed check keeps its row and gains a corrective action and a rerun.
 | S-5 Freshness and recovery | GitHub Actions | c9a75e4 | 2026-10-26 | PASS |
 | S-6 CI and hygiene | GitHub Actions | 518481a | 2026-10-26 | PASS |
 
-Deviation, approved by the author on 26 Oct 2026: the laptop run is
-deferred. The author's network could not reach Docker Hub or Ubuntu's
-package servers, so the spike ran on the GitHub Actions runner, the
-4-CPU reference machine in S-1. The laptop gives Docker about 7.8 GB
-(half its memory under WSL 2), above the 1.70 GiB peak measured here;
-that is an inference until the laptop run is made.
+The author's laptop passed the same 17 checks the same evening (commit
+90eca64, 15:01 UTC), pulling images through the mirror.gcr.io registry
+mirror because its network could not reach Docker Hub directly.
+
+### Author's laptop, commit 90eca64, `make spike`
+
+| Check | Measured |
+|---|---|
+| Peak memory, all core containers | 1.93 GiB (Docker under WSL 2 has 7.6 GiB) |
+| Full run, 520 documents, local model | 486.4 s on 12 CPUs, including the first model download |
+| Images and volumes | 4.55 GB |
+| `make verify` against the running stack | passed |
+| S-2, S-4, S-5 checks | all passed |
+| Index hash after two rebuilds | 597b39682981, identical to the CI runner |
+
+Other timings: cold `make up` with image build 138.1 s; `make data`
+15.4 s; day-1 incremental run 29.8 s. The identical index hash on two
+different machines confirms that the corpus, OCR and fake embedder are
+deterministic.
 
 ### GitHub Actions, commit c9a75e4, `make spike`
 
