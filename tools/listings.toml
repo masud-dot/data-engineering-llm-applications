@@ -1,4 +1,4 @@
 # Numbered listing -> file and region, filled in as chapters are
-# drafted. Example: "3.1" = { file = "dags/factory.py",
-# region = "dag-factory" }
+# drafted.
 [listings]
+"1.1" = { file = "tests/e2e/test_smoke.py", region = "smoke-test" }

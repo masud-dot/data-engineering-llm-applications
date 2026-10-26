@@ -21,3 +21,19 @@ def test_change_spec_parses() -> None:
         "soft": 2.0,
         "hard": 1.0,
     }
+
+
+@pytest.mark.chapter(1)
+def test_day0_corpus_holds_520_documents() -> None:
+    corpus = plan("full")
+    counts = {name: len(items) for name, items in corpus.items()}
+    assert counts == {
+        "wordings": 60,
+        "endorsements": 25,
+        "guidelines": 120,
+        "emails": 115,
+        "claims": 200,
+    }
+    assert sum(counts.values()) == 520
+    pages = sum(len(d["pages"]) for d in corpus["endorsements"])
+    assert pages == 50
