@@ -21,9 +21,10 @@ class ContractError(RuntimeError):
         shown = "; ".join(
             f"{v.key} {v.field}: {v.message}" for v in violations[:5]
         )
+        count = len(violations)
+        plural = "s" if count != 1 else ""
         super().__init__(
-            f"{len(violations)} {model} rows break the contract:"
-            f" {shown}"
+            f"{model} contract: {count} violation{plural}: {shown}"
         )
         self.violations = violations
 
