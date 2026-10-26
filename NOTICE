@@ -1,0 +1,7 @@
+This project depends on third-party software under its own licences,
+including Apache Airflow (Apache-2.0), PostgreSQL (PostgreSQL Licence),
+pgvector (PostgreSQL Licence), Tesseract OCR (Apache-2.0), pypdf
+(BSD-3-Clause), pdfplumber (MIT), psycopg (LGPL-3.0), Pydantic (MIT),
+NumPy (BSD-3-Clause), Pillow (MIT-CMU), ReportLab (BSD), fastembed
+(Apache-2.0) and the BAAI/bge-small-en-v1.5 model (MIT).
+All data in this repository is synthetic. Quillmere Mutual is fictional.

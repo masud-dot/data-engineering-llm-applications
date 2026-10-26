@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+data/landing/
+data/golden/
+data/.pause-*
+models/
+spike/
+deploy/compose/.env
