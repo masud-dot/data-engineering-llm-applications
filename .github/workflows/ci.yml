@@ -1,0 +1,52 @@
+name: ci
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.32"
+      - run: sudo apt-get update && sudo apt-get install -y tesseract-ocr
+      - run: uv sync --frozen
+      - run: make lint types
+      - run: uv run --frozen pytest -q
+      - name: DAG import test against Airflow 3.3.2
+        run: >-
+          uv run --frozen --with apache-airflow==3.3.2
+          pytest -q tests/integration/test_dag_import.py
+      - name: Parser spike (S-3)
+        run: |
+          uv run --frozen python -m llmdata.synthetic --files-only
+          uv run --frozen python tools/spike/parser_bench.py
+      - run: uv run --frozen python tools/check_listings.py --self-test
+      - run: uv run --frozen python tools/check_versions.py
+      - name: Secret scan
+        run: >-
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1
+          git /repo --redact --no-banner
+  spike:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.32"
+      - run: uv sync --frozen
+      - run: make spike
+      - if: always()
+        run: cat spike/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: spike-results
+          path: spike/

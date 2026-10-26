@@ -1,0 +1,4 @@
+chapter = 7
+callable = "llmdata.chunk:run"
+params.size = 900
+params.overlap = 120

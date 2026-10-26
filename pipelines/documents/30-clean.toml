@@ -1,0 +1,5 @@
+chapter = 6
+callable = "llmdata.clean:run"
+params.boilerplate = [
+  "^Quillmere Mutual · (internal|page \\d+ of \\d+)$",
+]

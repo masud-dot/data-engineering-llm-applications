@@ -1,0 +1,63 @@
+"""Apply staged documents to the live index."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from llmdata.db import Conn, connect
+from llmdata.pipeline.context import Context
+
+
+def staged_docs(conn: Conn, run_id: str) -> list[tuple[Any, ...]]:
+    return conn.execute(
+        "SELECT doc_key, op FROM staged WHERE run_id = %s"
+        " ORDER BY doc_key",
+        (run_id,),
+    ).fetchall()
+
+
+def apply_doc(conn: Conn, run_id: str, key: str, op: str) -> None:
+    """Replace one document; the caller owns the transaction."""
+    conn.execute("DELETE FROM documents WHERE doc_key = %s", (key,))
+    if op == "delete":
+        conn.execute(
+            "INSERT INTO tombstones (doc_key, run_id, reason)"
+            " VALUES (%s, %s, 'deleted') ON CONFLICT DO NOTHING",
+            (key, run_id),
+        )
+        return
+    conn.execute(
+        "INSERT INTO documents (doc_key, doc_id, version, origin,"
+        " meta, run_id) SELECT doc_key, doc_id, version, origin,"
+        " meta, run_id FROM staged WHERE run_id = %s"
+        " AND doc_key = %s",
+        (run_id, key),
+    )
+    conn.execute(
+        "INSERT INTO chunks (chunk_id, doc_key, ordinal, text,"
+        " embedding, meta, run_id) SELECT c.chunk_id, c.doc_key,"
+        " c.ordinal, c.text, c.embedding, s.meta, c.run_id"
+        " FROM staged_chunks c JOIN staged s"
+        " USING (run_id, doc_key)"
+        " WHERE c.run_id = %s AND c.doc_key = %s",
+        (run_id, key),
+    )
+
+
+def apply_staged(conn: Conn, run_id: str) -> int:
+    docs = staged_docs(conn, run_id)
+    for key, op in docs:
+        apply_doc(conn, run_id, key, op)
+    return len(docs)
+
+
+class DirectWriter:
+    """One transaction per document (Chapter 10)."""
+
+    def __call__(self, ctx: Context) -> int:
+        with connect(ctx.settings.dsn) as conn:
+            docs = staged_docs(conn, ctx.run_id)
+            for key, op in docs:
+                apply_doc(conn, ctx.run_id, key, op)
+                conn.commit()
+        return len(docs)

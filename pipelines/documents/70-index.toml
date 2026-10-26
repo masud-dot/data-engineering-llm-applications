@@ -1,0 +1,3 @@
+chapter = 10
+callable = "llmdata.index:run"
+params.writer = "llmdata.index.writers:DirectWriter"

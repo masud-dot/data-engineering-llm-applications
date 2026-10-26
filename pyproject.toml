@@ -1,0 +1,60 @@
+[project]
+name = "llmdata"
+version = "0.1.0"
+description = "Companion code for Data Engineering for LLM Applications"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "numpy>=2.3",
+  "pdfplumber>=0.11.10",
+  "pgvector>=0.5.1",
+  "pillow>=12",
+  "psycopg[binary]>=3.3.6",
+  "pydantic>=2.14.1",
+  "pypdf>=6.21.2",
+  "reportlab>=5.1.0",
+]
+
+[project.optional-dependencies]
+local = ["fastembed>=0.9.1"]
+
+[dependency-groups]
+dev = [
+  "mypy>=2.4.0",
+  "pytest>=9.1.1",
+  "rapidfuzz>=3.14.6",
+  "ruff>=0.17.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llmdata"]
+
+[tool.ruff]
+line-length = 70
+target-version = "py312"
+extend-exclude = ["data", "spike"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+mypy_path = "src:tools"
+files = ["src", "dags", "tools", "tests"]
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["pdfplumber.*", "reportlab.*", "fastembed.*",
+          "pgvector.*", "airflow.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+markers = ["chapter(n): chapter that introduces the test"]

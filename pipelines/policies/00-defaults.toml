@@ -1,0 +1,4 @@
+chapter = 3
+retries = 0
+retry_delay_s = 30
+timeout_s = 3600
