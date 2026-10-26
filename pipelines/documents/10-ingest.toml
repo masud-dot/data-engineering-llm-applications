@@ -1,3 +1,5 @@
+# region: ingest-stage-file
 chapter = 4
 callable = "llmdata.ingest:run"
 params.source = "llmdata.ingest.sources:SnapshotSource"
+# endregion

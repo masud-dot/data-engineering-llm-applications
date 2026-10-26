@@ -37,6 +37,7 @@ Manifest = dict[str, tuple[str, str, str, dict[str, Any]]]
 Pending = dict[str, tuple[datetime | None, dict[str, str]]]
 
 
+# region: landing-manifest
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -60,6 +61,9 @@ def file_manifest(data_dir: Path) -> Manifest:
     return found
 
 
+# endregion
+
+
 def file_item(
     key: str, entry: tuple[str, str, str, Any]
 ) -> SourceItem:
@@ -75,6 +79,7 @@ def file_item(
     )
 
 
+# region: claims-connector
 def claim_item(record: ClaimRecord) -> SourceItem:
     return SourceItem(
         doc_key=f"claim:{record.claim_id}",
@@ -103,13 +108,20 @@ def claim_rows(
             return require(ClaimRecord, cur.fetchall(), "claim_id")
 
 
+# endregion
+
+
 def versions(conn: Conn) -> dict[str, str]:
     rows = conn.execute("SELECT doc_key, version FROM documents")
     return {str(k): str(v) for k, v in rows}
 
 
+# region: snapshot-source
 class SnapshotSource:
     """Stages every document whose content differs from the index."""
+
+    def __init__(self) -> None:
+        self._pending: Pending = {}
 
     def changes(
         self, ctx: Context, conn: Conn
@@ -119,6 +131,8 @@ class SnapshotSource:
         for key, entry in manifest.items():
             if known.get(key) != entry[0][:16]:
                 yield file_item(key, entry)
+        files = {key: entry[0] for key, entry in manifest.items()}
+        self._pending["files"] = (None, files)
         rows = claim_rows(ctx.settings.source_dsn, live_only=True)
         for record in rows:
             item = claim_item(record)
@@ -126,4 +140,7 @@ class SnapshotSource:
                 yield item
 
     def pending(self) -> Pending:
-        return {}
+        return self._pending
+
+
+# endregion

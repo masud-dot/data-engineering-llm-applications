@@ -13,3 +13,9 @@
 "3.4" = { file = "pipelines/documents/00-smoke.toml", region = "smoke-stage" }
 "3.5" = { file = "src/llmdata/pipeline/spec.py", region = "stage-loader" }
 "3.6" = { file = "dags/factory.py", region = "dag-factory" }
+"4.1" = { file = "pipelines/documents/10-ingest.toml", region = "ingest-stage-file" }
+"4.2" = { file = "src/llmdata/ingest/sources.py", region = "landing-manifest" }
+"4.3" = { file = "src/llmdata/ingest/sources.py", region = "claims-connector" }
+"4.4" = { file = "src/llmdata/ingest/sources.py", region = "snapshot-source" }
+"4.5" = { file = "src/llmdata/ingest/__init__.py", region = "ingest-stage" }
+"4.6" = { file = "tests/integration/test_ingest.py", region = "replay-test" }
