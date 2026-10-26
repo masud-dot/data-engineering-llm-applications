@@ -51,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
             stage=stage.name,
             settings=cfg,
             params=stage.params,
-            conf=json.loads(env("LLMDATA_CONF") or "{}"),
+            conf=json.loads(env("LLMDATA_CONF") or "{}") or {},
             try_number=int(env("LLMDATA_TRY") or 1),
         )
 
