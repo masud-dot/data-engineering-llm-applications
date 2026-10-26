@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from airflow.providers.standard.operators.bash import BashOperator
-from airflow.sdk import DAG
+from airflow.sdk import DAG, chain
 
 from llmdata.pipeline import spec
 
@@ -23,15 +23,17 @@ ENV = {
 }
 
 
-def build(name: str) -> DAG:
+def build(name: str) -> DAG | None:
+    stages = spec.load(ROOT, name, UNTIL, PROFILE)
+    if not stages:
+        return None
     rules = spec.policy(ROOT, UNTIL)
     start = datetime(2026, 1, 1, tzinfo=UTC)
     dag = DAG(
         name, schedule=None, start_date=start, max_active_runs=1
     )
-    previous = None
-    for stage in spec.load(ROOT, name, UNTIL, PROFILE):
-        task = BashOperator(
+    tasks = [
+        BashOperator(
             task_id=stage.name,
             dag=dag,
             bash_command=f"{PYTHON} -m llmdata.pipeline stage"
@@ -42,12 +44,12 @@ def build(name: str) -> DAG:
             retry_delay=timedelta(seconds=rules.retry_delay_s),
             execution_timeout=timedelta(seconds=rules.timeout_s),
         )
-        if previous is not None:
-            previous >> task
-        previous = task
+        for stage in stages
+    ]
+    chain(*tasks)
     return dag
 
 
 for _name in spec.pipelines(ROOT):
-    globals()[_name] = build(_name)
+    globals()[_name] = build(_name)  # None when a pipeline is empty
 # endregion

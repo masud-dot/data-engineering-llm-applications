@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
 from pathlib import Path
 
 sys.path.insert(0, "src")
-from llmdata.pipeline.spec import pipelines  # noqa: E402
+from llmdata.pipeline.spec import load, pipelines  # noqa: E402
 
 COMPOSE = [
     "docker",
@@ -53,7 +54,8 @@ def dag_ids() -> set[str]:
 
 
 def main(timeout: float = 900) -> int:
-    want = set(pipelines(Path("pipelines")))
+    root, until = Path("pipelines"), os.environ.get("UNTIL")
+    want = {p for p in pipelines(root) if load(root, p, until)}
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         have = dag_ids()
