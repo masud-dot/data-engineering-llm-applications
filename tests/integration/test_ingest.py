@@ -77,6 +77,14 @@ def test_changed_file_is_staged_alone(landed: Settings) -> None:
 
 
 @pytest.mark.chapter(4)
+def test_files_still_landing_are_skipped(landed: Settings) -> None:
+    first = ingest_run(landed, "r1")
+    folder = sorted((landed.data_dir / "landing").glob("emails/*"))[0]
+    (folder / ".EM-9999.eml.part").write_text("half a message")
+    assert ingest_run(landed, "r2") == first
+
+
+@pytest.mark.chapter(4)
 def test_manifest_records_every_file(landed: Settings) -> None:
     ingest_run(landed, "r1")
     with connect(landed.dsn) as conn:

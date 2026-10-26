@@ -47,8 +47,8 @@ def file_manifest(data_dir: Path) -> Manifest:
     landing = data_dir / "landing"
     found: Manifest = {}
     for path in sorted(landing.rglob("*")):
-        if not path.is_file():
-            continue
+        if not path.is_file() or path.name.startswith("."):
+            continue  # hidden names are still being written
         rel = path.relative_to(landing)
         origin, region = rel.parts[0], rel.parts[1]
         meta = {"region": region, "roles": ROLES[origin]}

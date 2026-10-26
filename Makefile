@@ -50,7 +50,8 @@ run:
 	  --conf '{"embedder": "$(EMBEDDER)"}'
 
 run-local:
-	$(UV) python -m llmdata.pipeline run $(PIPELINE) --until $(UNTIL)
+	$(UV) python -m llmdata.pipeline run $(PIPELINE) --until $(UNTIL) \
+	  $(if $(RUN_ID),--run-id $(RUN_ID))
 
 lint:
 	$(UV) ruff check .
