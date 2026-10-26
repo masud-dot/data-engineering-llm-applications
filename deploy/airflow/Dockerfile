@@ -1,4 +1,4 @@
-FROM apache/airflow:3.3.2-python3.12
+FROM apache/airflow:3.3.2-python3.12@sha256:9df9c8be4096b9cc626bd7cb1f2b8c712eef66c59c615f8c7e6200871ca10bd1
 USER root
 RUN apt-get update \
  && apt-get install -y --no-install-recommends tesseract-ocr procps \

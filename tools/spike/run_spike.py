@@ -21,7 +21,10 @@ COMPOSE = ("docker compose -p llmdata -f deploy/compose/core.yml"
            " --env-file deploy/compose/.env")
 AIRFLOW = f"{COMPOSE} exec -T airflow"
 PSQL = f"{COMPOSE} exec -T postgres psql -U llmdata -At"
-IMAGES = ["pgvector/pgvector:pg17", "apache/airflow:3.3.2-python3.12"]
+IMAGES = ["pgvector/pgvector:pg17",
+          "apache/airflow:3.3.2-python3.12"]
+PG_IMAGE = ("pgvector/pgvector:pg17@sha256:"
+            "ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d")
 GIB = 1024**3
 UNITS = {"b": 1.0, "kb": 1e3, "mb": 1e6, "gb": 1e9, "kib": 1024.0,
          "mib": 1024.0**2, "gib": 1024.0**3}
@@ -116,7 +119,7 @@ def compare() -> dict[str, Any]:
 
 def disk_bytes() -> float:
     total = 0.0
-    for image in ["llmdata-airflow:local", IMAGES[0]]:
+    for image in ["llmdata-airflow:local", PG_IMAGE]:
         total += float(sh(f"docker image inspect -f '{{{{.Size}}}}'"
                           f" {image}"))
     for volume in ("llmdata_pgdata", "llmdata_models"):

@@ -9,20 +9,57 @@ failed check keeps its row and gains a corrective action and a rerun.
 |---|---|---|---|---|
 | Author's laptop | Intel Core 5 210H, 2.20 GHz | 16 GB (15.7 usable) | Windows 11 Home, WSL 2 Ubuntu | Desktop 4.88.1, Engine 29.7.2 |
 | Build workspace | x86-64 Linux container | n/a | Ubuntu 24.04 | client only, no daemon |
-| GitHub Actions | ubuntu-24.04, 4 CPUs | 16 GB | Ubuntu 24.04 | runner default |
+| GitHub Actions | ubuntu-24.04 runner, 4 CPUs | 16.8 GB | Linux 6.17 (Azure), glibc 2.39 | Engine 28.0.4 |
 
 ## Spike results
 
 | Spike | Machine | Commit | Date | Result |
 |---|---|---|---|---|
-| S-1 Resource fit | | | | not run |
-| S-2 Airflow topology | | | | not run |
-| S-3 Parser choice | Build workspace | b9affca | 2026-10-26 | PASS |
-| S-4 Embeddings | Build workspace | b9affca | 2026-10-26 | partial |
-| S-5 Freshness and recovery | Build workspace | b9affca | 2026-10-26 | partial |
-| S-6 CI and hygiene | Build workspace | b9affca | 2026-10-26 | partial |
+| S-1 Resource fit | GitHub Actions | c9a75e4 | 2026-10-26 | PASS |
+| S-2 Airflow topology | GitHub Actions | c9a75e4 | 2026-10-26 | PASS |
+| S-3 Parser choice | Build workspace; GitHub Actions | b9affca; c9a75e4 | 2026-10-26 | PASS |
+| S-4 Embeddings | GitHub Actions | c9a75e4 | 2026-10-26 | PASS |
+| S-5 Freshness and recovery | GitHub Actions | c9a75e4 | 2026-10-26 | PASS |
+| S-6 CI and hygiene | GitHub Actions | c9a75e4 | 2026-10-26 | PASS after digest pinning, see below |
 
-### S-3, build workspace, 2026-10-26
+Deviation, approved by the author on 26 Oct 2026: the laptop run is
+deferred. The author's network could not reach Docker Hub or Ubuntu's
+package servers, so the spike ran on the GitHub Actions runner, the
+4-CPU reference machine in S-1. The laptop gives Docker about 7.8 GB
+(half its memory under WSL 2), above the 1.70 GiB peak measured here;
+that is an inference until the laptop run is made.
+
+### GitHub Actions, commit c9a75e4, `make spike`
+
+| Check | Criterion | Measured |
+|---|---|---|
+| Peak memory, all core containers | <= 6 GiB | 1.70 GiB |
+| Full run, 520 documents, local model | <= 30 min on 4 CPUs | 127.9 s |
+| Images and volumes | <= 10 GB | 3.35 GB |
+| `make verify` against the running stack | passes | passed |
+| Executor and metadata | LocalExecutor, Postgres | as required |
+| DAG import errors | none | none |
+| Forced failure | retries and succeeds | succeeded on attempt 2 |
+| Restart | run history kept | 3 runs before, 3 after |
+| Fake vectors | recorded hash | 5ef622a5d6a7fe40 |
+| Local model, no network | loads from cache | BAAI/bge-small-en-v1.5, 384 dims |
+| API keys in the stack | none | none |
+| Day 0, day 1 | index matches source | 520 and 512 documents, no gaps |
+| Run killed inside the commit | index and watermark unchanged | unchanged; the retry matched (504) |
+| Two rebuilds | same index hash | 597b39682981 three times |
+
+Other timings: cold `make up` with image build 81.3 s; `make data`
+7.4 s; day-1 incremental run 17.8 s.
+
+### S-6, image digests
+
+Images pinned on 26 Oct 2026, from the digests the run reported:
+`pgvector/pgvector:pg17@sha256:ac08538c…a75d` and
+`apache/airflow:3.3.2-python3.12@sha256:9df9c8be…0bd1`. CI now runs
+`tools/check_versions.py --require-digests`; the result of that run is
+recorded below when it completes.
+
+### S-3, build workspace, 2026-10-26 (CI repeats it on every push)
 
 `python -m llmdata.synthetic --files-only`, then
 `python tools/spike/parser_bench.py` (Tesseract 5.3.4).

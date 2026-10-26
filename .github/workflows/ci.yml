@@ -2,6 +2,7 @@ name: ci
 on:
   push:
     branches: ["**"]
+    paths-ignore: ["docs/**"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -34,7 +35,9 @@ jobs:
       - run: >-
           uv run --frozen python tools/check_listings.py --self-test
           2>&1 | tee -a ci.log
-      - run: uv run --frozen python tools/check_versions.py 2>&1 | tee -a ci.log
+      - run: >-
+          uv run --frozen python tools/check_versions.py --require-digests
+          2>&1 | tee -a ci.log
       - name: Secret scan
         run: >-
           docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1
