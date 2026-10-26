@@ -68,7 +68,7 @@ verify-%:
 	$(UV) pytest -q --until $*
 
 psql:
-	$(COMPOSE) exec postgres psql -U llmdata -d llmdata
+	$(COMPOSE) exec postgres psql -U llmdata -d $(or $(DB),llmdata)
 
 index-hash:
 	@$(UV) python -m llmdata.index hash
