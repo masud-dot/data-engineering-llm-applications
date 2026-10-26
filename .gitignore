@@ -7,6 +7,6 @@ __pycache__/
 data/landing/
 data/golden/
 data/.pause-*
-models/
-spike/
+/models/
+/spike/
 deploy/compose/.env

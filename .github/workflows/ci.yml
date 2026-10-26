@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  checks: write
 jobs:
   checks:
     runs-on: ubuntu-24.04
@@ -16,23 +17,32 @@ jobs:
         with:
           version: "0.11.32"
       - run: sudo apt-get update && sudo apt-get install -y tesseract-ocr
-      - run: uv sync --frozen
-      - run: make lint types
-      - run: uv run --frozen pytest -q
+      - run: uv sync --frozen 2>&1 | tee -a ci.log
+      - run: make lint types 2>&1 | tee -a ci.log
+      - run: uv run --frozen pytest -q 2>&1 | tee -a ci.log
       - name: DAG import test against Airflow 3.3.2
         run: >-
           uv run --frozen --with apache-airflow==3.3.2
-          pytest -q tests/integration/test_dag_import.py
+          pytest -q tests/integration/test_dag_import.py 2>&1
+          | tee -a ci.log
       - name: Parser spike (S-3)
         run: |
-          uv run --frozen python -m llmdata.synthetic --files-only
-          uv run --frozen python tools/spike/parser_bench.py
-      - run: uv run --frozen python tools/check_listings.py --self-test
-      - run: uv run --frozen python tools/check_versions.py
+          uv run --frozen python -m llmdata.synthetic --files-only \
+            2>&1 | tee -a ci.log
+          uv run --frozen python tools/spike/parser_bench.py \
+            2>&1 | tee -a ci.log
+      - run: >-
+          uv run --frozen python tools/check_listings.py --self-test
+          2>&1 | tee -a ci.log
+      - run: uv run --frozen python tools/check_versions.py 2>&1 | tee -a ci.log
       - name: Secret scan
         run: >-
           docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1
-          git /repo --redact --no-banner
+          git /repo --redact --no-banner 2>&1 | tee -a ci.log
+      - if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/ci_report.py checks ci.log spike/s3.json
   spike:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -44,7 +54,11 @@ jobs:
       - run: uv sync --frozen
       - run: make spike
       - if: always()
-        run: cat spike/summary.md >> "$GITHUB_STEP_SUMMARY"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 tools/ci_report.py spike spike/summary.md
+          spike/spike.log
       - if: always()
         uses: actions/upload-artifact@v7
         with:
