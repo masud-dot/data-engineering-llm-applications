@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir uv==0.11.32 \
  && cd /opt/llmdata \
  && UV_PROJECT_ENVIRONMENT=/opt/venv UV_PYTHON_DOWNLOADS=never \
     uv sync --frozen --no-dev --extra local --no-install-project \
-    --no-cache --python /usr/local/bin/python3.12
+    --no-cache --python 3.12

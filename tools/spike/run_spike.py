@@ -277,9 +277,12 @@ def main() -> int:
         except Exception as exc:  # recorded, then the next spike runs
             record(name, "completed without error", False,
                    str(exc)[-400:])
-    results["facts"]["image_digests"] = sh(
-        "docker image inspect --format '{{json .RepoDigests}}' "
-        + " ".join(IMAGES), check=False)
+    results["facts"]["image_digests"] = {
+        image: next((line.split()[-1] for line in sh(
+            f"docker buildx imagetools inspect {image}", check=False
+        ).splitlines() if line.startswith("Digest:")), "unknown")
+        for image in IMAGES
+    }
     (OUT / "summary.json").write_text(json.dumps(results, indent=1))
     rows = ["| Spike | Check | Result | Detail |", "|---|---|---|---|"]
     rows += [f"| {c['spike']} | {c['check']} | "

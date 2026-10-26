@@ -28,7 +28,7 @@ def build(name: str) -> DAG:
     with DAG(
         dag_id=name,
         schedule=None,
-        start_date=datetime(2027, 1, 1, tzinfo=UTC),
+        start_date=datetime(2026, 1, 1, tzinfo=UTC),
         catchup=False,
         max_active_runs=1,
         tags=["llmdata"],
