@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+from importlib.metadata import version
 from typing import Any
 
 import numpy as np
@@ -17,6 +18,8 @@ MODEL = "BAAI/bge-small-en-v1.5"
 class LocalEmbedder:
     name = MODEL
     dim = 384
+    limit = 512  # tokens; the model ignores the rest
+    languages = frozenset({"en"})
 
     def __init__(self, threads: int = 2) -> None:
         from fastembed import TextEmbedding
@@ -29,12 +32,20 @@ class LocalEmbedder:
         if offline:
             options["local_files_only"] = True
         self.model = TextEmbedding(MODEL, **options)
+        # The runtime decides the vectors as much as the weights do.
+        self.revision = f"fastembed-{version('fastembed')}"
 
     def embed(self, texts: list[str]) -> list[Vector]:
         return [
             np.asarray(v, dtype=np.float32)
-            for v in self.model.embed(texts, batch_size=32)
+            for v in self.model.embed(
+                texts, batch_size=max(1, len(texts))
+            )
         ]
+
+    def token_count(self, texts: list[str]) -> list[int]:
+        """Tokens per text, counted by the model's own tokenizer."""
+        return [self.model.token_count(t) for t in texts]
 
 
 def main(argv: list[str] | None = None) -> int:

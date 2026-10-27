@@ -23,6 +23,10 @@ SAMPLES = [
 
 class FakeEmbedder:
     name = "fake-hash-384"
+    revision = "1"  # raise when vector() changes
+    languages: frozenset[str] = (
+        frozenset()
+    )  # any: it only hashes words
 
     def __init__(self, dim: int = 384) -> None:
         self.dim = dim

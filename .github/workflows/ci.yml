@@ -26,6 +26,10 @@ jobs:
           uv run --frozen --with apache-airflow==3.3.2
           pytest -q tests/integration/test_dag_import.py 2>&1
           | tee -a ci.log
+      - name: Spark job in local mode
+        run: >-
+          uv run --frozen --extra spark pytest -q tests/spark 2>&1
+          | tee -a ci.log
       - name: Parser spike (S-3)
         run: |
           uv run --frozen python -m llmdata.synthetic --files-only \

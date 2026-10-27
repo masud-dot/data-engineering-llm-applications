@@ -41,3 +41,10 @@
 "8.3" = { file = "src/llmdata/identity/__init__.py", region = "archive" }
 "8.4" = { file = "src/llmdata/identity/__init__.py", region = "trace" }
 "8.5" = { file = "tests/integration/test_lineage.py", region = "lineage-test" }
+"9.1" = { file = "src/llmdata/embed/__init__.py", region = "embedder" }
+"9.2" = { file = "src/llmdata/embed/__init__.py", region = "embed-cache" }
+"9.3" = { file = "src/llmdata/embed/__init__.py", region = "model-guard" }
+"9.4" = { file = "src/llmdata/embed/__init__.py", region = "embed-stage" }
+"9.5" = { file = "src/llmdata/embed/__init__.py", region = "reembed" }
+"9.6" = { file = "src/llmdata/embed/spark.py", region = "spark-embed" }
+"9.7" = { file = "tests/integration/test_embed.py", region = "embed-tests" }

@@ -1,0 +1,9 @@
+# The spark profile: the same Airflow service, run from an image with
+# Java and PySpark, so that the embed stage can run as a Spark job.
+# make up PROFILE=spark adds this file to the core one.
+services:
+  airflow:
+    image: llmdata-airflow-spark:local
+    build:
+      context: ../..
+      dockerfile: spark/Dockerfile

@@ -174,6 +174,12 @@ def s1() -> None:
            f"{disk / 1e9:.2f} GB")
     record("S-1", "make verify passes", verify.returncode == 0,
            verify.stdout.strip().splitlines()[-1:] or "no output")
+    bench = sh(f"{AIRFLOW} /opt/venv/bin/python -m llmdata.embed bench",
+               check=False)  # information for Chapter 9, not a check
+    results["facts"]["embedding_bench"] = bench.splitlines()
+    for name in ("fake", "local"):  # switch models and back again
+        results["facts"][f"reembed_{name}_s"] = timed(
+            f"{AIRFLOW} /opt/venv/bin/python -m llmdata.embed reembed {name}")
 
 
 def s2() -> None:

@@ -1,0 +1,6 @@
+# region: spark-stage
+chapter = 9
+callable = "llmdata.embed.spark:run"
+params.master = "local[*]"
+params.partitions = 8
+# endregion

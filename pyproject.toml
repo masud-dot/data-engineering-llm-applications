@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 local = ["fastembed>=0.9.1"]
+spark = ["pyspark>=4.2.0"]
 
 [dependency-groups]
 dev = [
@@ -53,7 +54,7 @@ explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = ["pdfplumber.*", "reportlab.*", "fastembed.*",
-          "pgvector.*", "airflow.*", "py3langid"]
+          "pgvector.*", "airflow.*", "py3langid", "pyspark.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

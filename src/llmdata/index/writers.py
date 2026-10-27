@@ -46,7 +46,31 @@ def apply_doc(conn: Conn, run_id: str, key: str, op: str) -> None:
     )
 
 
+def check_models(conn: Conn, run_id: str) -> None:
+    """Never publish vectors from a model the index does not use."""
+    staged = {
+        str(m)
+        for (m,) in conn.execute(
+            "SELECT DISTINCT embedding_model FROM staged_chunks"
+            " WHERE run_id = %s AND embedding_model IS NOT NULL",
+            (run_id,),
+        )
+    }
+    live = {
+        str(m)
+        for (m,) in conn.execute(
+            "SELECT DISTINCT embedding_model FROM chunks"
+        )
+    }
+    if live and staged - live:
+        raise RuntimeError(
+            f"run {run_id} has vectors from {sorted(staged - live)};"
+            f" the index uses {sorted(live)}"
+        )
+
+
 def apply_staged(conn: Conn, run_id: str) -> int:
+    check_models(conn, run_id)
     docs = staged_docs(conn, run_id)
     for key, op in docs:
         apply_doc(conn, run_id, key, op)
@@ -58,6 +82,7 @@ class DirectWriter:
 
     def __call__(self, ctx: Context) -> int:
         with connect(ctx.settings.dsn) as conn:
+            check_models(conn, ctx.run_id)
             docs = staged_docs(conn, ctx.run_id)
             for key, op in docs:
                 apply_doc(conn, ctx.run_id, key, op)

@@ -1,0 +1,41 @@
+name: spark-image
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "spark/**"
+      - "deploy/compose/spark.yml"
+      - "deploy/airflow/Dockerfile"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+permissions:
+  contents: read
+  checks: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build the core image, then the spark image
+        run: |
+          set -a; . deploy/compose/images.env; set +a
+          {
+            docker build -f deploy/airflow/Dockerfile \
+              --build-arg AIRFLOW_BASE="$AIRFLOW_BASE" \
+              -t llmdata-airflow:local .
+            docker build -f spark/Dockerfile \
+              -t llmdata-airflow-spark:local .
+          } 2>&1 | tee -a spark.log
+      - name: Run a Spark job inside the image
+        run: >-
+          docker run --rm --entrypoint /opt/venv/bin/python
+          llmdata-airflow-spark:local -c
+          "from pyspark.sql import SparkSession;
+          s = SparkSession.builder.master('local[2]').getOrCreate();
+          print('spark sum', s.sparkContext.parallelize(range(100)).sum());
+          s.stop()" 2>&1 | tee -a spark.log
+      - if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/ci_report.py spark-image spark.log

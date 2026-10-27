@@ -8,8 +8,10 @@ UNTIL ?= ch20
 DAY ?= 0
 CHANGES ?= update:5,soft:2,hard:1
 export UNTIL
-COMPOSE := docker compose -p llmdata -f deploy/compose/core.yml \
+COMPOSE_CORE := docker compose -p llmdata -f deploy/compose/core.yml \
 	--env-file deploy/compose/images.env --env-file $(ENVFILE)
+SPARK := $(if $(filter spark,$(PROFILE)),-f deploy/compose/spark.yml)
+COMPOSE := $(COMPOSE_CORE) $(SPARK)
 UV := uv run --frozen
 export PGHOST ?= localhost
 export PGPORT ?= 55432
@@ -17,7 +19,7 @@ export PGUSER ?= llmdata
 export PGPASSWORD ?= $(POSTGRES_PASSWORD)
 
 .PHONY: up down clean-all reset data run run-local lint types test \
-	verify index-hash watermark trace spike psql
+	verify index-hash watermark trace reembed spike psql
 
 $(ENVFILE):
 	@umask 077; { \
@@ -29,6 +31,7 @@ $(ENVFILE):
 up: $(ENVFILE)
 	$(COMPOSE) up -d --build --wait postgres
 	$(UV) python -m llmdata.db migrate
+	$(if $(SPARK),$(COMPOSE_CORE) build airflow)
 	$(COMPOSE) up -d --build airflow
 	$(UV) python tools/airflow_wait.py
 
@@ -74,6 +77,10 @@ psql:
 
 index-hash:
 	@$(UV) python -m llmdata.index hash
+
+reembed:
+	$(COMPOSE) exec airflow /opt/venv/bin/python -m llmdata.embed \
+	  reembed $(EMBEDDER)
 
 trace:
 	@$(UV) python -m llmdata.identity trace $(CHUNK)
