@@ -48,3 +48,8 @@
 "9.5" = { file = "src/llmdata/embed/__init__.py", region = "reembed" }
 "9.6" = { file = "src/llmdata/embed/spark.py", region = "spark-embed" }
 "9.7" = { file = "tests/integration/test_embed.py", region = "embed-tests" }
+"10.1" = { file = "deploy/sql/migrations/007_search.sql", region = "search-fields" }
+"10.2" = { file = "deploy/sql/migrations/007_search.sql", region = "search-function" }
+"10.3" = { file = "deploy/sql/migrations/007_search.sql", region = "hybrid-search" }
+"10.4" = { file = "src/llmdata/index/writers.py", region = "document-load" }
+"10.5" = { file = "tests/integration/test_search.py", region = "search-tests" }

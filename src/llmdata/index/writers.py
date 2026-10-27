@@ -16,6 +16,7 @@ def staged_docs(conn: Conn, run_id: str) -> list[tuple[Any, ...]]:
     ).fetchall()
 
 
+# region: document-load
 def apply_doc(conn: Conn, run_id: str, key: str, op: str) -> None:
     """Replace one document; the caller owns the transaction."""
     conn.execute("DELETE FROM documents WHERE doc_key = %s", (key,))
@@ -44,6 +45,9 @@ def apply_doc(conn: Conn, run_id: str, key: str, op: str) -> None:
         " WHERE c.run_id = %s AND c.doc_key = %s",
         (run_id, key),
     )
+
+
+# endregion
 
 
 def check_models(conn: Conn, run_id: str) -> None:

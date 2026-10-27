@@ -177,6 +177,9 @@ def s1() -> None:
     bench = sh(f"{AIRFLOW} /opt/venv/bin/python -m llmdata.embed bench",
                check=False)  # information for Chapter 9, not a check
     results["facts"]["embedding_bench"] = bench.splitlines()
+    results["facts"]["pgvector"] = sql(
+        "llmdata", "SELECT extversion FROM pg_extension"
+        " WHERE extname = 'vector'")
     for name in ("fake", "local"):  # switch models and back again
         results["facts"][f"reembed_{name}_s"] = timed(
             f"{AIRFLOW} /opt/venv/bin/python -m llmdata.embed reembed {name}")
