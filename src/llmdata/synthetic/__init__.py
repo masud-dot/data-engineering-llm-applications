@@ -46,6 +46,16 @@ SCALES = {
     },
 }
 GOLDEN = {"digital": 20, "scans": 5}
+# Wordings filed again under another number: copy -> original.
+DUPLICATES = {"full": {5: 1, 9: 1, 13: 1}, "small": {3: 1}}
+# Emails from customers who write in Welsh.
+WELSH = {"full": (30, 75), "small": (4,)}
+WELSH_BODY = (
+    "Bore da,\n\nMae dŵr wedi gollwng o bibell yn y gegin, ac mae'r"
+    " llawr wedi'i ddifrodi. Hoffwn wneud hawliad ar fy mholisi"
+    " yswiriant tŷ cyn gynted â phosibl. Mae gen i luniau o'r difrod"
+    " os oes eu hangen.\n\nFfoniwch fi ar {phone}.\n\n{who}\n"
+)
 RECORD = Path("data/synthetic/corpus.toml")
 WORDS = (
     "cover claim policy insured premium excess limit property damage"
@@ -212,6 +222,29 @@ def email_doc(rng: random.Random, i: int) -> dict[str, Any]:
     return {"name": name, "region": region, "text": msg.as_string()}
 
 
+def refile(doc: dict[str, Any], i: int) -> dict[str, Any]:
+    """The same wording filed again under another document number."""
+    name = f"WRD-{i:04d}"
+    pages = [list(lines) for lines in doc["pages"]]
+    pages[0][0] = pages[0][0].replace(doc["name"], name)
+    return {**doc, "name": name, "pages": pages}
+
+
+def welsh_email(i: int) -> dict[str, Any]:
+    """A customer who writes in Welsh, drawn from its own seed."""
+    rng = random.Random(f"welsh-{i}")
+    name, region = f"EM-{i:04d}", REGIONS[i % 4]
+    who, phone, address = person(rng)
+    msg = EmailMessage()
+    msg["From"] = f"{who} <{address}>"
+    msg["To"] = "claims@quillmere.example"
+    msg["Subject"] = f"Hawliad CLM-{rng.randint(1, 200):05d}"
+    msg["Date"] = format_datetime(BASE + timedelta(hours=i))
+    msg["Message-ID"] = f"<{name}@quillmere.example>"
+    msg.set_content(WELSH_BODY.format(phone=phone, who=who))
+    return {"name": name, "region": region, "text": msg.as_string()}
+
+
 def claims(rng: random.Random, count: int) -> list[list[Any]]:
     rows = []
     for i in range(1, count + 1):
@@ -246,6 +279,11 @@ def plan(scale: str) -> Corpus:
         origin: [make(rng, i) for i in range(1, counts[origin] + 1)]
         for origin, make in makers.items()
     }
+    for copy, first in DUPLICATES[scale].items():
+        wordings = corpus["wordings"]
+        wordings[copy - 1] = refile(wordings[first - 1], copy)
+    for i in WELSH[scale]:
+        corpus["emails"][i - 1] = welsh_email(i)
     corpus["claims"] = claims(rng, counts["claims"])
     return corpus
 

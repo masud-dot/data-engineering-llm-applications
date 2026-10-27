@@ -8,12 +8,14 @@ airflow = "apache/airflow:3.3.2-python3.12@sha256:9df9c8be4096b9cc626bd7cb1f2b8c
 
 [packages]
 fastembed = "0.9.1"
+hypothesis = "6.170.12"
 mypy = "2.4.0"
 numpy = "2.5.4"
 pdfplumber = "0.11.10"
 pgvector = "0.5.1"
 pillow = "13.0.0"
 psycopg = "3.3.6"
+py3langid = "0.4.0"
 pydantic = "2.14.1"
 pypdf = "6.21.2"
 pytest = "9.1.1"

@@ -11,6 +11,7 @@ dependencies = [
   "pgvector>=0.5.1",
   "pillow>=12",
   "psycopg[binary]>=3.3.6",
+  "py3langid>=0.4.0",
   "pydantic>=2.14.1",
   "pypdf>=6.21.2",
   "reportlab>=5.1.0",
@@ -21,6 +22,7 @@ local = ["fastembed>=0.9.1"]
 
 [dependency-groups]
 dev = [
+  "hypothesis>=6.170.12",
   "mypy>=2.4.0",
   "pytest>=9.1.1",
   "rapidfuzz>=3.14.6",
@@ -51,7 +53,7 @@ explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = ["pdfplumber.*", "reportlab.*", "fastembed.*",
-          "pgvector.*", "airflow.*"]
+          "pgvector.*", "airflow.*", "py3langid"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

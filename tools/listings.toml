@@ -24,3 +24,9 @@
 "5.3" = { file = "src/llmdata/parse/__init__.py", region = "ocr-fallback" }
 "5.4" = { file = "src/llmdata/parse/__init__.py", region = "parse-stage" }
 "5.5" = { file = "tests/unit/test_parse.py", region = "golden-test" }
+"6.1" = { file = "src/llmdata/clean/__init__.py", region = "cleaners" }
+"6.2" = { file = "src/llmdata/clean/dedup.py", region = "minhash" }
+"6.3" = { file = "src/llmdata/clean/dedup.py", region = "near-duplicates" }
+"6.4" = { file = "src/llmdata/clean/__init__.py", region = "clean-stage" }
+"6.5" = { file = "deploy/sql/migrations/003_search_chunks.sql", region = "search-view" }
+"6.6" = { file = "tests/unit/test_clean.py", region = "property-tests" }

@@ -3,3 +3,6 @@ callable = "llmdata.clean:run"
 params.boilerplate = [
   "^Quillmere Mutual · (internal|page \\d+ of \\d+)$",
 ]
+params.dedupe = ["wordings", "endorsements", "guidelines"]
+params.threshold = 0.8
+params.edition = "Edition (\\S+)"
