@@ -145,7 +145,7 @@ def show(limit: int = 10) -> list[tuple[object, ...]]:
     with connect(settings().dsn) as conn:
         return conn.execute(
             "SELECT run_id, kind, status, code, published,"
-            " to_char(started_at, 'DD Mon HH24:MI'),"
+            " to_char(started_at, 'HH24:MI'),"
             " to_char(finished_at - started_at, 'MI:SS')"
             " FROM ledger ORDER BY started_at DESC LIMIT %s",
             (limit,),
