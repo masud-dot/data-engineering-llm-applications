@@ -19,6 +19,9 @@ class Policy:
     retries: int = 0
     retry_delay_s: int = 30
     timeout_s: int = 3600
+    keep_staged_runs: int | None = None
+    backfill_batch: int = 100
+    schedules: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

@@ -21,7 +21,7 @@ export PGPASSWORD ?= $(POSTGRES_PASSWORD)
 
 .PHONY: up down clean-all reset data run run-local lint types test \
 	verify index-hash watermark lag erase trace reembed spike \
-	cdc-check psql
+	cdc-check backfill ledger psql
 
 $(ENVFILE):
 	@umask 077; { \
@@ -57,6 +57,13 @@ reset:
 run:
 	$(UV) python tools/airflow_run.py $(PIPELINE) \
 	  --conf '{"embedder": "$(EMBEDDER)"}'
+
+backfill:
+	$(UV) python tools/airflow_run.py $(PIPELINE) --conf \
+	  '{"embedder": "$(EMBEDDER)", "backfill": {"origin": "$(ORIGIN)"}}'
+
+ledger:
+	@$(UV) python -m llmdata.pipeline.ledger show
 
 run-local:
 	$(UV) python -m llmdata.pipeline run $(PIPELINE) --until $(UNTIL) \

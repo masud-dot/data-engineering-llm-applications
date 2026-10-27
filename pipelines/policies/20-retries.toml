@@ -1,3 +1,6 @@
+# region: retry-policy
 chapter = 12
-retries = 2
+retries = 2           # two more attempts after a failure
 retry_delay_s = 20
+timeout_s = 1800      # a stage that hangs is stopped and retried
+# endregion

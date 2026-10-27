@@ -24,7 +24,14 @@ def test_overlay_replaces_params_but_keeps_chapter() -> None:
 @pytest.mark.chapter(12)
 def test_policies_follow_until() -> None:
     assert spec.policy(ROOT, "ch11").retries == 0
-    assert spec.policy(ROOT, "ch12").retries == 2
+    rules = spec.policy(ROOT, "ch12")
+    assert (rules.retries, rules.retry_delay_s, rules.timeout_s) == (
+        2,
+        20,
+        1800,
+    )
+    assert (rules.keep_staged_runs, rules.backfill_batch) == (3, 100)
+    assert rules.schedules["documents"]["cron"] == "0 */3 * * *"
 
 
 def test_overlay_files_sort_after_their_base(tmp_path: Path) -> None:
