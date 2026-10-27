@@ -42,7 +42,7 @@ AS $$
     SELECT s.chunk_id, s.doc_key, s.section, s.text,
            s.embedding <=> query AS distance
     FROM search_chunks s
-    WHERE s.region = reader_region AND reader_role = ANY (s.roles)
+    WHERE s.region = reader_region AND s.roles @> ARRAY[reader_role]
     ORDER BY s.embedding <=> query
     LIMIT k
   )
@@ -60,7 +60,7 @@ LANGUAGE sql STABLE
 AS $$
   WITH allowed AS (
     SELECT * FROM search_chunks s
-    WHERE s.region = reader_region AND reader_role = ANY (s.roles)
+    WHERE s.region = reader_region AND s.roles @> ARRAY[reader_role]
   ), by_meaning AS (
     SELECT chunk_id, rank() OVER (ORDER BY distance) AS r
     FROM search(query, reader_region, reader_role, 50)
