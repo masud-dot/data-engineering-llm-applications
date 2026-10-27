@@ -26,8 +26,8 @@ def test_policies_follow_until() -> None:
     assert spec.policy(ROOT, "ch11").retries == 0
     rules = spec.policy(ROOT, "ch12")
     assert (rules.retries, rules.retry_delay_s, rules.timeout_s) == (
-        2,
-        20,
+        3,
+        60,
         1800,
     )
     assert (rules.keep_staged_runs, rules.backfill_batch) == (3, 100)
