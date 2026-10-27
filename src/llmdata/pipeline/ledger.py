@@ -91,6 +91,17 @@ class DeferredWriter:
 def commit(ctx: Context) -> None:
     """Publish, move checkpoints and record it in one transaction."""
     with connect(ctx.settings.dsn) as conn:
+        row = conn.execute(
+            "SELECT status FROM ledger WHERE run_id = %s FOR UPDATE",
+            (ctx.run_id,),
+        ).fetchone()
+        if row and row[0] == "committed":
+            print("already committed")  # a retry after success
+            return
+        if not row or row[0] != "running":
+            raise RuntimeError(
+                f"run {ctx.run_id} is {row}; not published"
+            )
         published = apply_staged(conn, ctx.run_id)
         ctx.pause_point()
         advance_checkpoints(conn, ctx.run_id)

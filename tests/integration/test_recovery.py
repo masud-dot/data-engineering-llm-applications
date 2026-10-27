@@ -81,6 +81,10 @@ def test_new_run_abandons_an_unfinished_one(
     assert query(
         day1.dsn, "SELECT count(*) FROM staged WHERE run_id = 'r1'"
     ) == [0]
+    with pytest.raises(RuntimeError, match="not published"):
+        pipeline(
+            ["stage", "documents", "90-commit", "--run-id", "r1"]
+        )
     assert compare()["match"]
 
 

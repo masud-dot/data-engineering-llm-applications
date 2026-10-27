@@ -31,7 +31,7 @@ def test_policies_follow_until() -> None:
         1800,
     )
     assert (rules.keep_staged_runs, rules.backfill_batch) == (3, 100)
-    assert rules.schedules["documents"]["cron"] == "0 */3 * * *"
+    assert rules.schedules["documents"]["cron"] == "20 */3 * * *"
 
 
 def test_overlay_files_sort_after_their_base(tmp_path: Path) -> None:

@@ -61,3 +61,11 @@
 "11.6" = { file = "src/llmdata/freshness/cdc.py", region = "connector" }
 "11.7" = { file = "src/llmdata/freshness/cdc.py", region = "change-event" }
 "11.8" = { file = "tests/integration/test_freshness.py", region = "freshness-tests" }
+"12.1" = { file = "pipelines/policies/20-retries.toml", region = "retry-policy" }
+"12.2" = { file = "src/llmdata/pipeline/ledger.py", region = "ledger-open" }
+"12.3" = { file = "src/llmdata/pipeline/ledger.py", region = "ledger-commit" }
+"12.4" = { file = "src/llmdata/pipeline/backfill.py", region = "backfill-select" }
+"12.5" = { file = "src/llmdata/pipeline/backfill.py", region = "backfill-stage" }
+"12.6" = { file = "pipelines/policies/30-recovery.toml", region = "recovery-policy" }
+"12.7" = { file = "dags/schedules.py", region = "schedules" }
+"12.8" = { file = "tests/integration/test_recovery.py", region = "recovery-tests" }

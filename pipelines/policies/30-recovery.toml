@@ -4,6 +4,6 @@ keep_staged_runs = 3  # staged rows of the last three good runs
 backfill_batch = 100  # documents re-processed per backfill run
 
 [schedules.documents]
-cron = "0 */3 * * *"
+cron = "20 */3 * * *"  # off the hour, clear of maintenance
 conf = { embedder = "fake" }
 # endregion

@@ -27,8 +27,10 @@ OLDER_CODE = (
     " AND (%(origin)s = '' OR d.origin = %(origin)s)"
     " ORDER BY d.doc_key"
 )
+# endregion
 
 
+# region: backfill-stage
 def run(ctx: Context) -> None:
     """Stage one batch of documents that other code published."""
     scope = ctx.conf.get("backfill")
