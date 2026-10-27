@@ -30,3 +30,9 @@
 "6.4" = { file = "src/llmdata/clean/__init__.py", region = "clean-stage" }
 "6.5" = { file = "deploy/sql/migrations/003_search_chunks.sql", region = "search-view" }
 "6.6" = { file = "tests/unit/test_clean.py", region = "property-tests" }
+"7.1" = { file = "src/llmdata/chunk/__init__.py", region = "chunk-structure" }
+"7.2" = { file = "src/llmdata/chunk/__init__.py", region = "chunk-split" }
+"7.3" = { file = "src/llmdata/chunk/__init__.py", region = "chunker" }
+"7.4" = { file = "src/llmdata/chunk/__init__.py", region = "chunk-stage" }
+"7.5" = { file = "deploy/sql/migrations/004_chunk_sections.sql", region = "chunk-sections" }
+"7.6" = { file = "tests/unit/test_chunk.py", region = "boundary-tests" }

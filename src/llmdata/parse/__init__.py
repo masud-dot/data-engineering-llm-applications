@@ -18,7 +18,8 @@ from llmdata.db import connect
 from llmdata.loader import load_object
 from llmdata.pipeline.context import Context
 
-BLOCKS = {"p", "h1", "h2", "h3", "li", "tr", "div", "br", "title"}
+BLOCKS = {"p", "li", "tr", "div", "br"}
+HIDDEN = {"script", "style", "title"}
 
 
 class _Text(HTMLParser):
@@ -30,13 +31,15 @@ class _Text(HTMLParser):
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
-        if tag in ("script", "style"):
+        if tag in HIDDEN:
             self.hidden += 1
+        elif tag in ("h1", "h2", "h3"):  # headings as Markdown
+            self.parts.append("\n\n" + "#" * int(tag[1]) + " ")
         elif tag in BLOCKS:
             self.parts.append("\n\n")
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in ("script", "style"):
+        if tag in HIDDEN:
             self.hidden -= 1
 
     def handle_data(self, data: str) -> None:

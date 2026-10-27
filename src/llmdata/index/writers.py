@@ -34,9 +34,9 @@ def apply_doc(conn: Conn, run_id: str, key: str, op: str) -> None:
         (run_id, key),
     )
     conn.execute(
-        "INSERT INTO chunks (chunk_id, doc_key, ordinal, text,"
-        " embedding, embedding_model, meta, run_id)"
-        " SELECT c.chunk_id, c.doc_key, c.ordinal, c.text,"
+        "INSERT INTO chunks (chunk_id, doc_key, ordinal, section,"
+        " text, embedding, embedding_model, meta, run_id)"
+        " SELECT c.chunk_id, c.doc_key, c.ordinal, c.section, c.text,"
         " c.embedding, c.embedding_model, s.meta - 'minhash',"
         " c.run_id"
         " FROM staged_chunks c JOIN staged s"

@@ -46,6 +46,7 @@ SCALES = {
     },
 }
 GOLDEN = {"digital": 20, "scans": 5}
+TABLE = "[schedule of cover]"  # where a wording draws its table
 # Wordings filed again under another number: copy -> original.
 DUPLICATES = {"full": {5: 1, 9: 1, 13: 1}, "small": {3: 1}}
 # Emails from customers who write in Welsh.
@@ -151,8 +152,11 @@ def wording(rng: random.Random, i: int) -> dict[str, Any]:
         f"Quillmere Mutual Home Policy Wording {name}",
         f"Region {region.title()}. Edition 2027.{1 + i % 4}",
     ]
-    for n, title in enumerate(("Cover", "Conditions"), 1):
-        top += [f"{n}. {title}", *wrap(paragraph(rng))]
+    cover, conditions = (
+        [f"{n}. {title}", *wrap(paragraph(rng))]
+        for n, title in enumerate(("Cover", "Conditions"), 1)
+    )
+    top += [*cover, TABLE, *conditions]  # the schedule sits in Cover
     table = [["Cover", "Limit", "Excess", "Exclusion"]] + [
         [
             rng.choice(COVERS),
@@ -293,6 +297,23 @@ def corpus_hash(corpus: Corpus) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
+def draw_table(
+    canvas: Canvas, table: list[list[str]], y: float
+) -> float:
+    """A ruled table with its top edge at y; returns the bottom."""
+    xs = [60, 190, 280, 360, 535]
+    top = y
+    for row in table:
+        for x, cell in zip(xs, row, strict=False):
+            canvas.drawString(x + 4, y - 13, cell)
+        canvas.line(xs[0], y, xs[-1], y)
+        y -= 18
+    canvas.line(xs[0], y, xs[-1], y)
+    for x in xs:
+        canvas.line(x, top, x, y)
+    return y
+
+
 def draw_pdf(
     path: Path,
     pages: list[list[str]],
@@ -303,20 +324,11 @@ def draw_pdf(
         canvas.setFont("Helvetica", 10)
         y = 800.0
         for line in lines:
+            if line == TABLE and table:
+                y = draw_table(canvas, table, y + 8) - 12
+                continue
             canvas.drawString(60, y, line)
             y -= 14
-        if table and number == 1:
-            xs = [60, 190, 280, 360, 535]
-            y -= 6
-            for row in table:
-                for x, cell in zip(xs, row, strict=False):
-                    canvas.drawString(x + 4, y - 13, cell)
-                canvas.line(xs[0], y, xs[-1], y)
-                y -= 18
-            canvas.line(xs[0], y, xs[-1], y)
-            top = y + 18 * len(table)
-            for x in xs:
-                canvas.line(x, top, x, y)
         canvas.drawString(
             60,
             40,
@@ -360,11 +372,19 @@ def scan_pdf(path: Path, pages: list[list[str]], seed: int) -> None:
 
 
 def truth(doc: dict[str, Any]) -> list[str]:
-    pages = [list(lines) for lines in doc["pages"]]
+    grid: list[str] = []
     if "table" in doc:  # the grid as Markdown, header first
         rows = ["| " + " | ".join(row) + " |" for row in doc["table"]]
         rule = "|" + " --- |" * len(doc["table"][0])
-        pages[0] += [rows[0], rule, *rows[1:]]
+        grid = [rows[0], rule, *rows[1:]]
+    pages = [
+        [
+            part
+            for line in lines
+            for part in (grid if line == TABLE else [line])
+        ]
+        for lines in doc["pages"]
+    ]
     total = len(pages)
     return [
         "\n".join([*lines, f"Quillmere Mutual · Page {n} of {total}"])

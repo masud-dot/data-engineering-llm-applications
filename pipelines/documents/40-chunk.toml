@@ -1,4 +1,6 @@
 chapter = 7
 callable = "llmdata.chunk:run"
 params.size = 900
-params.overlap = 120
+# Numbered clauses in wordings, and second- and third-level headings
+# that the parser writes for HTML pages.
+params.headings = "^(\\d+\\. \\S|#{2,3} )"

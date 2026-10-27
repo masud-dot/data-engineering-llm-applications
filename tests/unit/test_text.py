@@ -1,6 +1,5 @@
 import pytest
 
-from llmdata.chunk import split
 from llmdata.clean import clean_text
 from llmdata.embed.fake import (
     RECORDED_SAMPLE_HASH,
@@ -22,16 +21,6 @@ def test_clean_removes_boilerplate_and_extra_space() -> None:
     assert clean_text(raw, [r"^Acme · page \d+ of \d+$"]) == (
         "Cover applies\n\nEnd"
     )
-
-
-@pytest.mark.chapter(7)
-def test_chunks_respect_size_and_overlap() -> None:
-    text = "\n\n".join(
-        f"Paragraph {i} " + "word " * 40 for i in range(10)
-    )
-    chunks = split(text, size=300, overlap=50)
-    assert all(len(c) <= 300 for c in chunks)
-    assert len(chunks) > 3
 
 
 @pytest.mark.chapter(9)
