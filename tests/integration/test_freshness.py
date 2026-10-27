@@ -64,6 +64,9 @@ def test_empty_landing_zone_deletes_nothing(day0: Settings) -> None:
         assert index_hash(conn) == before
 
 
+# endregion
+
+
 @pytest.mark.chapter(11)
 def test_erased_claim_leaves_every_store(day0: Settings) -> None:
     key = "claim:CLM-00001"
@@ -124,6 +127,3 @@ def test_withdrawn_original_reveals_its_copy(day0: Settings) -> None:
     (day0.data_dir / "landing" / original.split(":", 1)[1]).unlink()
     assert run("r1") == 0
     assert query(day0.dsn, hidden, copy)[0] > 0
-
-
-# endregion

@@ -20,7 +20,6 @@ from llmdata.ingest.sources import (
     claim_item,
     claim_rows,
     file_manifest,
-    sha256,
 )
 from llmdata.pipeline.context import Context
 
@@ -31,7 +30,6 @@ def source_of(origin: str) -> str:
     return "claims" if origin == "claims" else "landing zone"
 
 
-# region: reconcile
 def reconcile(ctx: Context) -> None:
     """Stage deletes for indexed documents gone from every source."""
     with connect(ctx.settings.source_dsn, vectors=False) as src:
@@ -66,9 +64,6 @@ def reconcile(ctx: Context) -> None:
     print(f"reconcile: {len(orphans)} orphaned documents staged")
 
 
-# endregion
-
-
 def advance_checkpoints(conn: Conn, run_id: str) -> None:
     conn.execute(
         "INSERT INTO checkpoints (source, watermark, manifest,"
@@ -89,82 +84,71 @@ def commit(ctx: Context) -> None:
     print("checkpoints advanced")
 
 
+# region: erase-sql
+TEXTS = (
+    "SELECT encode(sha256(convert_to(text, 'UTF8')), 'hex')"
+    " FROM {} WHERE doc_key = ANY(%(k)s)"
+)
+ERASE = [
+    "DELETE FROM embedding_cache WHERE text_hash IN ("
+    + TEXTS.format("chunks")
+    + " UNION "
+    + TEXTS.format("staged_chunks")
+    + ")",
+    "DELETE FROM documents WHERE doc_key = ANY(%(k)s)",
+    "DELETE FROM staged_chunks WHERE doc_key = ANY(%(k)s)",
+    "DELETE FROM staged WHERE doc_key = ANY(%(k)s)",
+    "INSERT INTO tombstones (doc_key, run_id, reason, request)"
+    " SELECT k, 'erase:' || %(r)s, 'erased', %(r)s"
+    " FROM unnest(%(k)s::text[]) AS k ON CONFLICT DO NOTHING",
+]
+# endregion
+
+
+def column(conn: Conn, sql: str, *args: object) -> set[str]:
+    return {str(row[0]) for row in conn.execute(sql, args)}
+
+
 # region: erase
-def erase(key: str, request: str) -> dict[str, int]:
+def erase(key: str, request: str) -> list[str]:
     """Remove a document and its copies from every store we own."""
     cfg = settings()
-    removed: Counter[str] = Counter()
     with connect(cfg.dsn) as conn:  # one transaction
-        keys = [key] + [
-            str(k)
-            for (k,) in conn.execute(
-                "SELECT doc_key FROM documents"
-                " WHERE meta -> 'duplicate_of' ->> 'doc_key' = %s",
-                (key,),
-            )
-        ]
-        texts = conn.execute(
-            "SELECT text FROM chunks WHERE doc_key = ANY(%(k)s)"
-            " UNION SELECT text FROM staged_chunks"
-            " WHERE doc_key = ANY(%(k)s)",
-            {"k": keys},
+        copies = column(
+            conn,
+            "SELECT doc_key FROM documents"
+            " WHERE meta #>> '{duplicate_of,doc_key}' = %s",
+            key,
         )
-        hashes = [sha256(str(t).encode()) for (t,) in texts]
-        digests = {
-            str(d)
-            for (d,) in conn.execute(
-                "SELECT content_hash FROM versions"
-                " WHERE doc_key = ANY(%s)",
-                (keys,),
-            )
-        }
-        for table in (
-            "documents",
-            "staged_chunks",
-            "staged",
-            "versions",
-        ):
-            removed[table] = conn.execute(
-                f"DELETE FROM {table} WHERE doc_key = ANY(%s)",
-                (keys,),
-            ).rowcount
-        removed["embedding_cache"] = conn.execute(
-            "DELETE FROM embedding_cache WHERE text_hash = ANY(%s)",
-            (hashes,),
-        ).rowcount
-        conn.execute(
-            "INSERT INTO tombstones (doc_key, run_id, reason,"
-            " request) SELECT k, %s, 'erased', %s"
-            " FROM unnest(%s::text[]) AS k ON CONFLICT DO NOTHING",
-            (f"erase:{request}", request, keys),
+        keys = [key, *sorted(copies)]
+        for sql in ERASE:
+            conn.execute(sql, {"k": keys, "r": request})
+        gone = column(
+            conn,
+            "DELETE FROM versions WHERE doc_key = ANY(%s)"
+            " RETURNING content_hash",
+            keys,
         )
-        shared = {
-            str(d)
-            for (d,) in conn.execute(
-                "SELECT content_hash FROM versions"
-                " WHERE content_hash = ANY(%s)",
-                (sorted(digests),),
-            )
-        }
-        paths = [
-            cfg.data_dir / "archive" / d[:2] / d
-            for d in digests - shared
-        ] + [
+        gone -= column(
+            conn,
+            "SELECT content_hash FROM versions"
+            " WHERE content_hash = ANY(%s)",
+            sorted(gone),
+        )
+        paths = [cfg.data_dir / "archive" / h[:2] / h for h in gone]
+        paths += [
             cfg.data_dir / "landing" / k.split(":", 1)[1]
             for k in keys
             if k.startswith("file:")
         ]
-        for path in paths:  # before the commit: a rerun finishes
-            if path.exists():
-                path.unlink()
-                removed["files"] += 1
-    return dict(removed)
+        for path in paths:  # before the commit, so a rerun finishes
+            path.unlink(missing_ok=True)
+    return keys
 
 
 # endregion
 
 
-# region: lag
 def seconds(duration: str) -> int:
     """Days, hours and minutes of an ISO 8601 duration."""
     unit = {"D": 86400, "H": 3600, "M": 60}
@@ -199,9 +183,6 @@ def lag() -> dict[str, Any]:
             "ok": age is not None and age <= target,
         }
     return report
-
-
-# endregion
 
 
 def show() -> dict[str, object]:
@@ -265,7 +246,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "erase":
         if not args.key or not args.request:
             parser.error("erase needs a key and --request")
-        print(json.dumps(erase(args.key, args.request)))
+        print("erased", " ".join(erase(args.key, args.request)))
         return 0
     report = {"show": show, "compare": compare, "lag": lag}[
         args.command

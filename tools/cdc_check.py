@@ -25,7 +25,7 @@ from confluent_kafka import Consumer, KafkaError, TopicPartition
 c = Consumer({"bootstrap.servers": "kafka:9092", "group.id": "probe",
               "enable.partition.eof": True})
 c.assign([TopicPartition("source.public.claims", 0, 0)])
-ops, lags, END = {}, [], KafkaError._PARTITION_EOF
+ops, lags, END, first = {}, [], KafkaError._PARTITION_EOF, None
 while True:
     m = c.poll(15)
     eof = m and m.error() and m.error().code() == END
@@ -36,10 +36,12 @@ while True:
         continue
     e = json.loads(m.value())
     ops[e["op"]] = ops.get(e["op"], 0) + 1
+    if e["op"] == "d":
+        first = first or e["before"]
     if e["op"] != "r":
         lags.append(e["ts_ms"] - e["source"]["ts_ms"])
 lags.sort()
-print(json.dumps({"ops": ops, "capture_ms": {
+print(json.dumps({"ops": ops, "delete_before": first, "capture_ms": {
     "median": lags[len(lags) // 2] if lags else None,
     "max": lags[-1] if lags else None, "events": len(lags)}}))
 """
@@ -95,7 +97,9 @@ def main() -> int:
             f"{start} events; {report}",
         )
         out = base.sh("make data DAY=1")
-        done = ast.literal_eval(out.split("day 1: ", 1)[1].strip())
+        done = ast.literal_eval(
+            out.split("day 1: ")[1].splitlines()[0]
+        )
         changes = done["claims_updated"] + done["claims_soft"]
         settle(start + changes + 2 * done["claims_hard"])
         base.run_dag("documents")

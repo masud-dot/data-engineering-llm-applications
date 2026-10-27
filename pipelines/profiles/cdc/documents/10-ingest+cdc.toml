@@ -1,5 +1,3 @@
-# region: cdc-stage
 chapter = 11
 params.source = "llmdata.freshness.cdc:CdcSource"
 params.kafka = "kafka:9092"
-# endregion

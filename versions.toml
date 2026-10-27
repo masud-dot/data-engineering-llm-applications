@@ -5,8 +5,11 @@ uv = "0.11.32"
 [images]
 postgres = "pgvector/pgvector:pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d"
 airflow = "apache/airflow:3.3.2-python3.12@sha256:9df9c8be4096b9cc626bd7cb1f2b8c712eef66c59c615f8c7e6200871ca10bd1"
+kafka = "apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837"
+debezium = "quay.io/debezium/connect:3.7.0.Final@sha256:8dc50babf4f92744459f955504b54b5589836939263fa2fbc58cb67a115eda3b"
 
 [packages]
+confluent-kafka = "2.16.0"
 fastembed = "0.9.1"
 hypothesis = "6.170.12"
 mypy = "2.4.0"

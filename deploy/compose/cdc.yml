@@ -1,7 +1,6 @@
 # The cdc profile: Debezium reads the claims table from the
 # write-ahead log and publishes each change to Kafka.
 # make up PROFILE=cdc adds this file to the core one.
-# region: cdc-compose
 services:
   postgres:
     command: ["postgres", "-c", "wal_level=logical"]
@@ -44,4 +43,3 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD:?run make up}
 volumes:
   kafka:
-# endregion

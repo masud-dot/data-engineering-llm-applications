@@ -53,3 +53,11 @@
 "10.3" = { file = "deploy/sql/migrations/007_search.sql", region = "hybrid-search" }
 "10.4" = { file = "src/llmdata/index/writers.py", region = "document-load" }
 "10.5" = { file = "tests/integration/test_search.py", region = "search-tests" }
+"11.1" = { file = "src/llmdata/freshness/sources.py", region = "claims-watermark" }
+"11.2" = { file = "src/llmdata/freshness/sources.py", region = "manifest-diff" }
+"11.3" = { file = "src/llmdata/freshness/__init__.py", region = "erase-sql" }
+"11.4" = { file = "src/llmdata/freshness/__init__.py", region = "erase" }
+"11.5" = { file = "deploy/sql/migrations/008_freshness.sql", region = "erased-guard" }
+"11.6" = { file = "src/llmdata/freshness/cdc.py", region = "connector" }
+"11.7" = { file = "src/llmdata/freshness/cdc.py", region = "change-event" }
+"11.8" = { file = "tests/integration/test_freshness.py", region = "freshness-tests" }

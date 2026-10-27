@@ -29,7 +29,6 @@ class SourceGone(RuntimeError):
     """A source lost more of its keys than one run may delete."""
 
 
-# region: removal-guard
 def guard(name: str, before: int, gone: int, limit: float) -> None:
     """Refuse a run that would delete too much of one source."""
     if before and gone > before * limit:
@@ -37,9 +36,6 @@ def guard(name: str, before: int, gone: int, limit: float) -> None:
             f"{name}: {gone} of {before} documents gone;"
             f" refusing to delete more than {limit:.0%}"
         )
-
-
-# endregion
 
 
 def limit(ctx: Context) -> float:
@@ -56,7 +52,6 @@ def erased(conn: Conn) -> set[str]:
     return {str(row[0]) for row in rows}
 
 
-# region: watermark-source
 class WatermarkSource:
     def __init__(self) -> None:
         self._pending: Pending = {}
@@ -82,8 +77,6 @@ class WatermarkSource:
             yield item
         if skipped:
             print(f"skipped {skipped} erased documents at source")
-
-    # endregion
 
     def files(
         self, ctx: Context, marks: Marks, known: dict[str, str]

@@ -264,7 +264,7 @@ def claims(rng: random.Random, count: int) -> list[list[Any]]:
                 REGIONS[i % 4],
                 rng.choice(STATUSES),
                 note,
-                (BASE + timedelta(seconds=i)).isoformat(),
+                (BASE - timedelta(hours=count - i)).isoformat(),
             ]
         )
     return rows

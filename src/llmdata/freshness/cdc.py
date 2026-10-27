@@ -118,7 +118,6 @@ def read(
     return values, {str(p): str(end) for p, end in ends.items()}
 
 
-# region: cdc-source
 class CdcSource(WatermarkSource):
     """Files as before; claims from the change topic."""
 
@@ -140,9 +139,6 @@ class CdcSource(WatermarkSource):
             elif known.get(key) != item.content_hash[:16]:
                 yield item
         self._pending["claims"] = (None, ends)
-
-
-# endregion
 
 
 def register(url: str = CONNECT, wait: float = 300) -> str:
