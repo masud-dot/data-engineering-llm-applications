@@ -53,7 +53,7 @@ def migrate(dsn: str, folder: Path = MIGRATIONS) -> list[str]:
 
 PIPELINE_TABLES = (
     "chunks, documents, staged_chunks, staged, tombstones,"
-    " pending_checkpoints, checkpoints, ledger"
+    " pending_checkpoints, checkpoints, ledger, versions"
 )
 
 

@@ -36,3 +36,8 @@
 "7.4" = { file = "src/llmdata/chunk/__init__.py", region = "chunk-stage" }
 "7.5" = { file = "deploy/sql/migrations/004_chunk_sections.sql", region = "chunk-sections" }
 "7.6" = { file = "tests/unit/test_chunk.py", region = "boundary-tests" }
+"8.1" = { file = "src/llmdata/identity/__init__.py", region = "identity-sql" }
+"8.2" = { file = "deploy/sql/migrations/005_versions.sql", region = "versions-table" }
+"8.3" = { file = "src/llmdata/identity/__init__.py", region = "archive" }
+"8.4" = { file = "src/llmdata/identity/__init__.py", region = "trace" }
+"8.5" = { file = "tests/integration/test_lineage.py", region = "lineage-test" }

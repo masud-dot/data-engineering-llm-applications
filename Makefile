@@ -17,7 +17,7 @@ export PGUSER ?= llmdata
 export PGPASSWORD ?= $(POSTGRES_PASSWORD)
 
 .PHONY: up down clean-all reset data run run-local lint types test \
-	verify index-hash watermark spike psql
+	verify index-hash watermark trace spike psql
 
 $(ENVFILE):
 	@umask 077; { \
@@ -43,6 +43,7 @@ data:
 
 reset:
 	$(UV) python -m llmdata.db reset
+	rm -rf data/archive
 	$(MAKE) data DAY=0
 
 run:
@@ -73,6 +74,9 @@ psql:
 
 index-hash:
 	@$(UV) python -m llmdata.index hash
+
+trace:
+	@$(UV) python -m llmdata.identity trace $(CHUNK)
 
 watermark:
 	@$(UV) python -m llmdata.freshness show
