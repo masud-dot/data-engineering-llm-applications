@@ -1,0 +1,36 @@
+name: cdc
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "deploy/compose/cdc.yml"
+      - "deploy/compose/images.env"
+      - "deploy/airflow/Dockerfile"
+      - "src/llmdata/freshness/**"
+      - "pipelines/profiles/cdc/**"
+      - "tools/cdc_check.py"
+      - ".github/workflows/cdc.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  checks: write
+jobs:
+  cdc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.32"
+      - run: uv sync --frozen
+      - run: make cdc-check
+      - if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/ci_report.py cdc cdc/summary.md cdc/cdc.log
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cdc-results
+          path: cdc/

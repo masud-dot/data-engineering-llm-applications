@@ -11,7 +11,8 @@ export UNTIL
 COMPOSE_CORE := docker compose -p llmdata -f deploy/compose/core.yml \
 	--env-file deploy/compose/images.env --env-file $(ENVFILE)
 SPARK := $(if $(filter spark,$(PROFILE)),-f deploy/compose/spark.yml)
-COMPOSE := $(COMPOSE_CORE) $(SPARK)
+CDC := $(if $(filter cdc,$(PROFILE)),-f deploy/compose/cdc.yml)
+COMPOSE := $(COMPOSE_CORE) $(SPARK) $(CDC)
 UV := uv run --frozen
 export PGHOST ?= localhost
 export PGPORT ?= 55432
@@ -19,7 +20,8 @@ export PGUSER ?= llmdata
 export PGPASSWORD ?= $(POSTGRES_PASSWORD)
 
 .PHONY: up down clean-all reset data run run-local lint types test \
-	verify index-hash watermark trace reembed spike psql
+	verify index-hash watermark lag erase trace reembed spike \
+	cdc-check psql
 
 $(ENVFILE):
 	@umask 077; { \
@@ -34,6 +36,9 @@ up: $(ENVFILE)
 	$(if $(SPARK),$(COMPOSE_CORE) build airflow)
 	$(COMPOSE) up -d --build airflow
 	$(UV) python tools/airflow_wait.py
+	$(if $(CDC),$(COMPOSE) up -d kafka connect)
+	$(if $(CDC),$(COMPOSE) exec -T airflow \
+	  /opt/venv/bin/python -m llmdata.freshness.cdc register)
 
 down:
 	$(COMPOSE) down
@@ -88,5 +93,15 @@ trace:
 watermark:
 	@$(UV) python -m llmdata.freshness show
 
+lag:
+	@$(UV) python -m llmdata.freshness lag
+
+erase:
+	@$(UV) python -m llmdata.freshness erase $(KEY) \
+	  --request "$(REQUEST)"
+
 spike:
 	$(UV) python tools/spike/run_spike.py
+
+cdc-check:
+	$(UV) python tools/cdc_check.py

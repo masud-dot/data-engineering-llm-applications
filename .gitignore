@@ -10,3 +10,4 @@ data/.pause-*
 /models/
 /spike/
 deploy/compose/.env
+/cdc/
