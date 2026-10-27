@@ -38,9 +38,9 @@ def on_spark(
     spark = SparkSession.builder.master(master).getOrCreate()
     try:
         job = spark.sparkContext.parallelize(rows, n)
-        return job.mapPartitions(
-            partial(embed_partition, name)
-        ).collect()
+        done = job.mapPartitions(partial(embed_partition, name))
+        out: list[Out] = done.collect()
+        return out
     finally:
         spark.stop()
 
