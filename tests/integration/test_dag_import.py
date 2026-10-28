@@ -39,9 +39,9 @@ def test_schedules_trigger_paused_by_default(
         for value in runpy.run_path("dags/schedules.py").values()
         if isinstance(value, DAG)
     }
-    assert list(found) == [
+    assert sorted(found) == [
         "schedule__documents",
         "schedule__eval_sets",
     ]
-    dag = found["schedule__documents"]
-    assert dag.is_paused_upon_creation and not dag.catchup
+    for dag in found.values():
+        assert dag.is_paused_upon_creation and not dag.catchup

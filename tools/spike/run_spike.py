@@ -312,11 +312,15 @@ def s6() -> None:
            len(found) == 6 and versions == {"1"}, sorted(versions))
     sh("make reset")
     run_dag("documents", {"embedder": "local"})
-    pairs = sql("llmdata", "SELECT question || ' ' || evidence"
-                " FROM evals.items").splitlines()
-    page = Path("data/landing/guidelines/north/FAQ.html")
-    page.write_text("<h1>Schedule questions</h1>"
-                    + "".join(f"<p>{pair}</p>" for pair in pairs))
+    pages: dict[Path, str] = {}
+    for row in sql("llmdata", "SELECT region, question || ' ' ||"
+                   " evidence FROM evals.items").splitlines():
+        region, pair = row.split("|", 1)
+        page = Path(f"data/landing/guidelines/{region}/FAQ.html")
+        pages[page] = pages.get(page, "<h1>Questions</h1>") + (
+            f"<p>{pair}</p>")
+    for page, html in pages.items():  # one FAQ page per region
+        page.write_text(html)
     run_dag("documents", {"embedder": "local"})
     sh(f"{AIRFLOW} env LLMDATA_CONF='{{\"embedder\": \"local\"}}'"
        " /opt/venv/bin/python -m llmdata.pipeline stage eval_sets"
@@ -328,7 +332,9 @@ def s6() -> None:
         capture_output=True, text=True).returncode != 0
     record("S-6", "the check refuses a set found in the index",
            refused, found["local 900 leaked"])
-    page.unlink()
+    for page in pages:
+        page.unlink()
+
 
 def main() -> int:
     OUT.mkdir(exist_ok=True)
