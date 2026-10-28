@@ -14,6 +14,7 @@ from llmdata.db import migrate, reset
 from llmdata.synthetic import load_claims, plan, write_files
 
 
+# region: test-databases
 @pytest.fixture(scope="session")
 def pg(
     tmp_path_factory: pytest.TempPathFactory,
@@ -27,7 +28,7 @@ def pg(
         psycopg.connect(db("postgres"), connect_timeout=3).close()
     except psycopg.OperationalError:
         if os.environ.get("LLMDATA_REQUIRE_DB") == "1":
-            raise
+            raise  # CI and the spike: a missing database fails
         pytest.skip("Postgres is not reachable")
     with psycopg.connect(db("postgres"), autocommit=True) as conn:
         for name in ("llmdata_test", "source_test"):
@@ -48,6 +49,9 @@ def pg(
         patch.setenv(key, value)
     yield settings()
     patch.undo()
+
+
+# endregion
 
 
 @pytest.fixture
