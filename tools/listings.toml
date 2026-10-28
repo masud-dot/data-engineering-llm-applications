@@ -79,3 +79,8 @@
 "14.1" = { file = "tests/integration/conftest.py", region = "test-databases" }
 "14.2" = { file = "tests/unit/test_golden_set.py", region = "golden-set" }
 "14.3" = { file = "tests/integration/test_golden.py", region = "golden-index" }
+"15.1" = { file = "src/llmdata/privacy/__init__.py", region = "detectors" }
+"15.2" = { file = "src/llmdata/privacy/__init__.py", region = "redact-stage" }
+"15.3" = { file = "deploy/sql/migrations/011_privacy.sql", region = "reader-access" }
+"15.4" = { file = "deploy/sql/migrations/011_privacy.sql", region = "access-log" }
+"15.5" = { file = "tests/integration/test_permissions.py", region = "permission-tests" }
