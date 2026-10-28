@@ -150,7 +150,8 @@ def check(ctx: Context) -> None:
 # region: rank-item
 HITS = (
     "SELECT c.text FROM hybrid_search(%s, %s, %s, %s, %s) h"
-    " JOIN chunks c USING (chunk_id) ORDER BY h.score DESC, chunk_id"
+    " JOIN search_chunks c USING (chunk_id)"
+    " ORDER BY h.score DESC, chunk_id"
 )
 
 
@@ -216,7 +217,7 @@ def score(ctx: Context) -> None:
         conn.execute(SAVE, r)
     print(
         f"{name} v{version}: recall@{k} {r['recall']:.2f},"
-        f" MRR {r['mrr']:.2f} over {n} items with {model}"
+        f" MRR {r['mrr']:.2f} over {n} items"
     )
 
 
