@@ -306,7 +306,8 @@ def main() -> int:
         results["facts"], indent=1) + "\n```\n"
     (OUT / "summary.md").write_text(text)
     print(text)
-    return 0
+    failed = [c for c in results["checks"] if not c["pass"]]
+    return 1 if failed else 0  # a failed check fails the job
 
 
 if __name__ == "__main__":
