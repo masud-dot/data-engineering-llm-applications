@@ -10,6 +10,21 @@ permissions:
 jobs:
   checks:
     runs-on: ubuntu-24.04
+    services:
+      postgres:  # the image pinned in versions.toml
+        image: pgvector/pgvector:pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d
+        env:
+          POSTGRES_USER: llmdata
+          POSTGRES_DB: llmdata
+          POSTGRES_HOST_AUTH_METHOD: trust  # a throwaway database
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U llmdata"
+          --health-interval 5s --health-retries 20
+    env:
+      PGHOST: localhost
+      PGUSER: llmdata
+      LLMDATA_REQUIRE_DB: "1"  # a test that needs it fails, not skips
     steps:
       - uses: actions/checkout@v7
         with:
@@ -19,8 +34,11 @@ jobs:
           version: "0.11.32"
       - run: sudo apt-get update && sudo apt-get install -y tesseract-ocr
       - run: uv sync --frozen 2>&1 | tee -a ci.log
+      - run: |
+          uv run --frozen python -m llmdata.db migrate 2>&1 | tee -a ci.log
+          psql -d llmdata -c "CREATE DATABASE source" 2>&1 | tee -a ci.log
       - run: make lint types 2>&1 | tee -a ci.log
-      - run: uv run --frozen pytest -q 2>&1 | tee -a ci.log
+      - run: uv run --frozen pytest -q -rs 2>&1 | tee -a ci.log
       - name: DAG import test against Airflow 3.3.2
         run: >-
           uv run --frozen --with apache-airflow==3.3.2

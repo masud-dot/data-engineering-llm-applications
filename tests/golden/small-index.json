@@ -1,0 +1,149 @@
+{
+ "claim:CLM-00001": {
+  "version": "4e66861efd8ce717",
+  "region": "south",
+  "chunks": 1,
+  "sections": "",
+  "content": "05611987bbb4"
+ },
+ "claim:CLM-00002": {
+  "version": "4e08596333c79f37",
+  "region": "east",
+  "chunks": 1,
+  "sections": "",
+  "content": "2085501953c3"
+ },
+ "claim:CLM-00003": {
+  "version": "8c00edf01f036945",
+  "region": "west",
+  "chunks": 1,
+  "sections": "",
+  "content": "303cf091873c"
+ },
+ "claim:CLM-00004": {
+  "version": "40587428735f2ddd",
+  "region": "north",
+  "chunks": 1,
+  "sections": "",
+  "content": "892830345a58"
+ },
+ "claim:CLM-00005": {
+  "version": "036f01244a24c097",
+  "region": "south",
+  "chunks": 1,
+  "sections": "",
+  "content": "709d871770f9"
+ },
+ "claim:CLM-00006": {
+  "version": "4f96001cf032458c",
+  "region": "east",
+  "chunks": 1,
+  "sections": "",
+  "content": "c68fd87663bc"
+ },
+ "claim:CLM-00007": {
+  "version": "2a5deb5496653b38",
+  "region": "west",
+  "chunks": 1,
+  "sections": "",
+  "content": "b43806e717b7"
+ },
+ "claim:CLM-00008": {
+  "version": "c7dbdca6a22a26f8",
+  "region": "north",
+  "chunks": 1,
+  "sections": "",
+  "content": "cd3bbf1ff348"
+ },
+ "claim:CLM-00009": {
+  "version": "f9b540e2a24265a0",
+  "region": "south",
+  "chunks": 1,
+  "sections": "",
+  "content": "5ede15f6c18c"
+ },
+ "claim:CLM-00010": {
+  "version": "d27ce617fce43232",
+  "region": "east",
+  "chunks": 1,
+  "sections": "",
+  "content": "8c50caba9ce1"
+ },
+ "file:emails/east/EM-0002.eml": {
+  "version": "28487df983857b92",
+  "region": "east",
+  "chunks": 1,
+  "sections": "",
+  "content": "8d0a18391409"
+ },
+ "file:emails/north/EM-0004.eml": {
+  "version": "9f02f43e9a25d051",
+  "region": "north",
+  "chunks": 1,
+  "sections": "",
+  "content": "7ffaf920488b"
+ },
+ "file:emails/south/EM-0001.eml": {
+  "version": "6295ed2d62019aa0",
+  "region": "south",
+  "chunks": 1,
+  "sections": "",
+  "content": "6207acd15c1b"
+ },
+ "file:emails/west/EM-0003.eml": {
+  "version": "205f1fb6c5c72de6",
+  "region": "west",
+  "chunks": 1,
+  "sections": "",
+  "content": "7eb594a284e3"
+ },
+ "file:guidelines/east/GL-0002.html": {
+  "version": "012d82284bccc3dd",
+  "region": "east",
+  "chunks": 3,
+  "sections": "## Appetite | ## Referral triggers | ## Evidence",
+  "content": "88108aa4739a"
+ },
+ "file:guidelines/north/GL-0004.html": {
+  "version": "336c110c1fe067a0",
+  "region": "north",
+  "chunks": 3,
+  "sections": "## Appetite | ## Referral triggers | ## Evidence",
+  "content": "172b32e6f440"
+ },
+ "file:guidelines/south/GL-0001.html": {
+  "version": "0b62869915275680",
+  "region": "south",
+  "chunks": 3,
+  "sections": "## Appetite | ## Referral triggers | ## Evidence",
+  "content": "0ce9ddb67f7f"
+ },
+ "file:guidelines/west/GL-0003.html": {
+  "version": "d772df1317864b8f",
+  "region": "west",
+  "chunks": 3,
+  "sections": "## Appetite | ## Referral triggers | ## Evidence",
+  "content": "b98354928653"
+ },
+ "file:wordings/east/WRD-0002.pdf": {
+  "version": "9134d752416d13a2",
+  "region": "east",
+  "chunks": 5,
+  "sections": "1. Cover | 2. Conditions | 3. Exclusions | 4. Claims | 5. Complaints",
+  "content": "c5f2c0f3e04f"
+ },
+ "file:wordings/south/WRD-0001.pdf": {
+  "version": "1bfa491555700be5",
+  "region": "south",
+  "chunks": 5,
+  "sections": "1. Cover | 2. Conditions | 3. Exclusions | 4. Claims | 5. Complaints",
+  "content": "1d22381b1113"
+ },
+ "file:wordings/south/WRD-0003.pdf": {
+  "version": "95cc2f66e026db40",
+  "region": "south",
+  "chunks": 5,
+  "sections": "1. Cover | 2. Conditions | 3. Exclusions | 4. Claims | 5. Complaints",
+  "content": "34fdac6f80fb"
+ }
+}

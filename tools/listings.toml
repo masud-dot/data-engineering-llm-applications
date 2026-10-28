@@ -76,3 +76,5 @@
 "13.5" = { file = "src/llmdata/quality/__init__.py", region = "quality-gate" }
 "13.6" = { file = "src/llmdata/quality/__init__.py", region = "index-check" }
 "13.7" = { file = "tests/integration/test_quality.py", region = "quality-tests" }
+"14.1" = { file = "tests/unit/test_golden_set.py", region = "golden-set" }
+"14.2" = { file = "tests/integration/test_golden.py", region = "golden-index" }

@@ -31,6 +31,9 @@ def main() -> int:
             problems.append(f"image {name}: {ref} not used")
         if args.require_digests and "@sha256:" not in ref:
             problems.append(f"image {name}: not pinned by digest")
+    ci = Path(".github/workflows/ci.yml").read_text()
+    if wanted["images"]["postgres"] not in ci:
+        problems.append("ci.yml: database image differs from pin")
     python = Path(".python-version").read_text().strip()
     if python != wanted["python"]:
         problems.append(f"python {wanted['python']} != {python}")

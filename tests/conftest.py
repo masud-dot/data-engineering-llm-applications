@@ -13,6 +13,11 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=None,
         help="run tests for chapters up to chNN",
     )
+    parser.addoption(
+        "--update-golden",
+        action="store_true",
+        help="rewrite golden files from this run's output",
+    )
 
 
 def pytest_collection_modifyitems(
