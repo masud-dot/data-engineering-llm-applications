@@ -71,6 +71,9 @@ quality:
 index-check:
 	@$(UV) python -m llmdata.quality index
 
+scores:
+	@$(UV) python -m llmdata.datasets scores $(SET)
+
 run-local:
 	$(UV) python -m llmdata.pipeline run $(PIPELINE) --until $(UNTIL) \
 	  $(if $(RUN_ID),--run-id $(RUN_ID))

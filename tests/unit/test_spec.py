@@ -34,6 +34,13 @@ def test_policies_follow_until() -> None:
     assert rules.schedules["documents"]["cron"] == "20 */3 * * *"
 
 
+@pytest.mark.chapter(16)
+def test_schedules_merge_across_policy_files() -> None:
+    assert set(spec.policy(ROOT, "ch15").schedules) == {"documents"}
+    merged = spec.policy(ROOT, "ch16").schedules
+    assert set(merged) == {"documents", "eval_sets"}
+
+
 def test_overlay_files_sort_after_their_base(tmp_path: Path) -> None:
     folder = tmp_path / "p"
     folder.mkdir()

@@ -1,0 +1,6 @@
+chapter = 16
+callable = "llmdata.datasets:check"
+params.name = "schedules"
+# Above this share of stale items the set no longer says much about
+# the index; the run fails and asks for a rebuild.
+params.max_stale = 0.25

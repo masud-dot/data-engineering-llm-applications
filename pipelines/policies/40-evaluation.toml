@@ -1,0 +1,6 @@
+chapter = 16
+
+# Every morning, after the 06:20 run has published.
+[schedules.eval_sets]
+cron = "50 6 * * *"
+conf = { embedder = "fake" }

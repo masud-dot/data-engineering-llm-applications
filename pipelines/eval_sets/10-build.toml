@@ -1,0 +1,7 @@
+# region: eval-stages
+chapter = 16
+callable = "llmdata.datasets:build"
+params.name = "schedules"
+params.size = 40
+params.seed = 16
+# endregion

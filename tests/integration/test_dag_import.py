@@ -20,7 +20,7 @@ def test_factory_builds_one_dag_per_pipeline(
         for name, value in runpy.run_path("dags/factory.py").items()
         if isinstance(value, DAG)
     }
-    assert set(found) == {"documents", "retry_demo"}
+    assert set(found) == {"documents", "eval_sets", "retry_demo"}
     stages = spec.load(Path("pipelines"), "documents", "ch20")
     assert found["documents"].task_ids == [s.name for s in stages]
 
@@ -39,6 +39,9 @@ def test_schedules_trigger_paused_by_default(
         for value in runpy.run_path("dags/schedules.py").values()
         if isinstance(value, DAG)
     }
-    assert list(found) == ["schedule__documents"]
+    assert list(found) == [
+        "schedule__documents",
+        "schedule__eval_sets",
+    ]
     dag = found["schedule__documents"]
     assert dag.is_paused_upon_creation and not dag.catchup

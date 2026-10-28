@@ -112,8 +112,11 @@ def policy(root: Path, until: str | int | None = None) -> Policy:
     merged: dict[str, Any] = {}
     for _, path in _files(root / "policies"):
         data = _read(path)
-        if int(data.get("chapter", 0)) <= limit:
-            merged.update(
-                {k: v for k, v in data.items() if k != "chapter"}
-            )
+        if int(data.get("chapter", 0)) > limit:
+            continue
+        for key, value in data.items():
+            if key == "schedules":  # merged by pipeline name
+                merged.setdefault(key, {}).update(value)
+            elif key != "chapter":
+                merged[key] = value
     return Policy(**merged)

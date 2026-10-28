@@ -280,12 +280,62 @@ def s5() -> None:
            " / ".join(h[:12] for h in [*hashes, first]))
 
 
+
+CHUNK = Path("pipelines/documents/40-chunk.toml")
+SCORES = "make -s scores"
+
+
+def chunk_size(size: int) -> None:
+    CHUNK.write_text(re.sub(r"params\.size = \d+",
+                            f"params.size = {size}", CHUNK.read_text()))
+
+
+def last_score() -> list[str]:
+    return sh(SCORES).splitlines()[-1].split()
+
+
+def s6() -> None:
+    """One evaluation set version across chunk sizes and models."""
+    found = results["facts"].setdefault("evaluation", {})
+    try:
+        for embedder in ("fake", "local"):
+            for size in (900, 500, 1400):  # v1 is built at 900
+                chunk_size(size)
+                sh("make reset")
+                run_dag("documents", {"embedder": embedder})
+                run_dag("eval_sets", {"embedder": embedder})
+                found[f"{embedder} {size}"] = " ".join(last_score())
+    finally:
+        chunk_size(900)
+    versions = {row.split()[0] for row in found.values()}
+    record("S-6", "one set version scored in all six cases",
+           len(found) == 6 and versions == {"1"}, sorted(versions))
+    sh("make reset")
+    run_dag("documents", {"embedder": "local"})
+    pairs = sql("llmdata", "SELECT question || ' ' || evidence"
+                " FROM evals.items").splitlines()
+    page = Path("data/landing/guidelines/north/FAQ.html")
+    page.write_text("<h1>Schedule questions</h1>"
+                    + "".join(f"<p>{pair}</p>" for pair in pairs))
+    run_dag("documents", {"embedder": "local"})
+    sh(f"{AIRFLOW} env LLMDATA_CONF='{{\"embedder\": \"local\"}}'"
+       " /opt/venv/bin/python -m llmdata.pipeline stage eval_sets"
+       " 30-score --run-id leak")  # the score without the check
+    found["local 900 leaked"] = " ".join(last_score())
+    refused = subprocess.run(
+        "uv run --frozen python tools/airflow_run.py eval_sets"
+        """ --conf '{"embedder": "local"}'""", shell=True,
+        capture_output=True, text=True).returncode != 0
+    record("S-6", "the check refuses a set found in the index",
+           refused, found["local 900 leaked"])
+    page.unlink()
+
 def main() -> int:
     OUT.mkdir(exist_ok=True)
     LOG.append((OUT / "spike.log").open("w"))
     facts()
     for name, step in (("S-1", s1), ("S-2", s2), ("S-4", s4),
-                       ("S-5", s5)):
+                       ("S-5", s5), ("S-6", s6)):
         try:
             step()
         except Exception as exc:  # recorded, then the next spike runs

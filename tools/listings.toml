@@ -84,3 +84,11 @@
 "15.3" = { file = "deploy/sql/migrations/011_privacy.sql", region = "reader-access" }
 "15.4" = { file = "deploy/sql/migrations/011_privacy.sql", region = "access-log" }
 "15.5" = { file = "tests/integration/test_permissions.py", region = "permission-tests" }
+"16.1" = { file = "deploy/sql/migrations/012_evals.sql", region = "eval-schema" }
+"16.2" = { file = "src/llmdata/datasets/__init__.py", region = "candidates" }
+"16.3" = { file = "src/llmdata/datasets/__init__.py", region = "build-set" }
+"16.4" = { file = "pipelines/eval_sets/10-build.toml", region = "eval-stages" }
+"16.5" = { file = "src/llmdata/datasets/__init__.py", region = "check-set" }
+"16.6" = { file = "src/llmdata/datasets/__init__.py", region = "rank-item" }
+"16.7" = { file = "src/llmdata/datasets/__init__.py", region = "score-set" }
+"16.8" = { file = "tests/integration/test_eval_sets.py", region = "eval-tests" }
