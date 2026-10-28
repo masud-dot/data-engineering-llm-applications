@@ -21,7 +21,7 @@ export PGPASSWORD ?= $(POSTGRES_PASSWORD)
 
 .PHONY: up down clean-all reset data run run-local lint types test \
 	verify index-hash watermark lag erase trace reembed spike \
-	cdc-check backfill ledger psql
+	cdc-check backfill ledger quality index-check psql
 
 $(ENVFILE):
 	@umask 077; { \
@@ -64,6 +64,12 @@ backfill:
 
 ledger:
 	@$(UV) python -m llmdata.pipeline.ledger show
+
+quality:
+	@$(UV) python -m llmdata.quality report $(RUN_ID)
+
+index-check:
+	@$(UV) python -m llmdata.quality index
 
 run-local:
 	$(UV) python -m llmdata.pipeline run $(PIPELINE) --until $(UNTIL) \

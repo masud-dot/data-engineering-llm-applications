@@ -1,2 +1,12 @@
+# region: gate-settings
 chapter = 13
 callable = "llmdata.quality:gate"
+params.max_chunk_chars = 2000  # the chunker aims at 900
+params.max_shrink = 0.3        # a document may lose 30% of its text
+params.min_chars = 100         # shorter cleaned text is near-empty
+params.max_near_empty = 0.02   # share of the run's documents
+params.min_docs = 20           # fewer documents: drift not judged
+params.window = 5              # recent good runs in the baseline
+params.max_change = 0.3        # relative: characters per document
+params.max_share_change = 0.15 # absolute: shares of claims, scans
+# endregion

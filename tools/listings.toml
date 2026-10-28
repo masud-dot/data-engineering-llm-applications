@@ -69,3 +69,10 @@
 "12.6" = { file = "pipelines/policies/30-recovery.toml", region = "recovery-policy" }
 "12.7" = { file = "dags/schedules.py", region = "schedules" }
 "12.8" = { file = "tests/integration/test_recovery.py", region = "recovery-tests" }
+"13.1" = { file = "src/llmdata/quality/checks.py", region = "count-checks" }
+"13.2" = { file = "src/llmdata/quality/checks.py", region = "run-profile" }
+"13.3" = { file = "src/llmdata/quality/checks.py", region = "drift" }
+"13.4" = { file = "pipelines/documents/85-quality-gate.toml", region = "gate-settings" }
+"13.5" = { file = "src/llmdata/quality/__init__.py", region = "quality-gate" }
+"13.6" = { file = "src/llmdata/quality/__init__.py", region = "index-check" }
+"13.7" = { file = "tests/integration/test_quality.py", region = "quality-tests" }
