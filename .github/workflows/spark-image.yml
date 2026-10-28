@@ -12,6 +12,9 @@ on:
 permissions:
   contents: read
   checks: write
+defaults:
+  run:
+    shell: bash  # -eo pipefail: a failure before | tee fails the step
 jobs:
   build:
     runs-on: ubuntu-24.04

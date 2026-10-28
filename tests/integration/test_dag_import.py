@@ -1,6 +1,9 @@
 import runpy
+from pathlib import Path
 
 import pytest
+
+from llmdata.pipeline import spec
 
 
 @pytest.mark.chapter(3)
@@ -18,8 +21,8 @@ def test_factory_builds_one_dag_per_pipeline(
         if isinstance(value, DAG)
     }
     assert set(found) == {"documents", "retry_demo"}
-    assert found["documents"].task_ids[0] == "00-smoke"
-    assert len(found["documents"].task_ids) == 14
+    stages = spec.load(Path("pipelines"), "documents", "ch20")
+    assert found["documents"].task_ids == [s.name for s in stages]
 
 
 @pytest.mark.chapter(12)
