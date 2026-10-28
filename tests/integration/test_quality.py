@@ -89,9 +89,9 @@ def test_regional_shift_is_drift(
     with pytest.raises(QualityError):
         run("r1")
     assert query(day0.dsn, FAILED, "r1") == [
-        "share of claims: drift south"
+        "share of claims drift south"
     ]
-    accept = {"accept": ["share of claims: drift"]}
+    accept = {"accept": ["share of claims drift"]}
     monkeypatch.setenv("LLMDATA_CONF", json.dumps(accept))
     assert run("r1") == 0  # a person accepted the shift
 

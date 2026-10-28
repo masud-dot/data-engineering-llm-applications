@@ -76,9 +76,9 @@ def gate(ctx: Context) -> None:
         r for r in results if not r.passed and r.name not in accept
     ]
     for r in failed:
+        where = f" ({r.scope})" if r.scope else ""
         print(
-            f"FAILED {r.name} {r.scope}: {r.value:.3g}"
-            f" (bound {r.bound})"
+            f"FAILED {r.name}{where}: {r.value:.3g}, bound {r.bound}"
         )
     if failed:
         raise QualityError(f"{len(failed)} quality checks failed")

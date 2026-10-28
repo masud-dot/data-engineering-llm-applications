@@ -161,7 +161,7 @@ def drift(
             change, bound = change / (base or 1.0), p["max_change"]
         passed = change <= bound
         results.append(
-            Result(f"{name}: drift", scope, change, bound, passed)
+            Result(f"{name} drift", scope, change, bound, passed)
         )
     return results
 
