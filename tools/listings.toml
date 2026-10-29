@@ -92,3 +92,10 @@
 "16.6" = { file = "src/llmdata/datasets/__init__.py", region = "rank-item" }
 "16.7" = { file = "src/llmdata/datasets/__init__.py", region = "score-set" }
 "16.8" = { file = "tests/integration/test_eval_sets.py", region = "eval-tests" }
+"17.1" = { file = "deploy/sql/migrations/013_training.sql", region = "training-schema" }
+"17.2" = { file = "src/llmdata/training/__init__.py", region = "split-and-label" }
+"17.3" = { file = "src/llmdata/training/teacher.py", region = "teacher" }
+"17.4" = { file = "src/llmdata/training/__init__.py", region = "example-checks" }
+"17.5" = { file = "src/llmdata/training/__init__.py", region = "decontaminate" }
+"17.6" = { file = "src/llmdata/training/__init__.py", region = "publish" }
+"17.7" = { file = "tests/integration/test_leakage.py", region = "leakage-tests" }

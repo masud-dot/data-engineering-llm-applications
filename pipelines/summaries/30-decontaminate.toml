@@ -1,0 +1,4 @@
+chapter = 17
+callable = "llmdata.training:decontaminate"
+params.name = "summaries"
+params.n = 8  # shared words in a row that count as overlap

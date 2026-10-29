@@ -74,6 +74,9 @@ index-check:
 scores:
 	@$(UV) python -m llmdata.datasets scores $(SET)
 
+datasets:
+	@$(UV) python -m llmdata.training show $(SET)
+
 run-local:
 	$(UV) python -m llmdata.pipeline run $(PIPELINE) --until $(UNTIL) \
 	  $(if $(RUN_ID),--run-id $(RUN_ID))

@@ -20,7 +20,12 @@ def test_factory_builds_one_dag_per_pipeline(
         for name, value in runpy.run_path("dags/factory.py").items()
         if isinstance(value, DAG)
     }
-    assert set(found) == {"documents", "eval_sets", "retry_demo"}
+    assert set(found) == {
+        "documents",
+        "eval_sets",
+        "retry_demo",
+        "summaries",
+    }
     stages = spec.load(Path("pipelines"), "documents", "ch20")
     assert found["documents"].task_ids == [s.name for s in stages]
 

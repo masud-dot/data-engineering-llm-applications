@@ -1,0 +1,4 @@
+chapter = 17
+callable = "llmdata.training:build"
+params.name = "summaries"
+params.teacher = "fake"  # the model that writes the summaries
