@@ -21,6 +21,7 @@ def test_factory_builds_one_dag_per_pipeline(
         if isinstance(value, DAG)
     }
     assert set(found) == {
+        "claim_facts",
         "documents",
         "eval_sets",
         "retry_demo",
@@ -45,6 +46,7 @@ def test_schedules_trigger_paused_by_default(
         if isinstance(value, DAG)
     }
     assert sorted(found) == [
+        "schedule__claim_facts",
         "schedule__documents",
         "schedule__eval_sets",
     ]

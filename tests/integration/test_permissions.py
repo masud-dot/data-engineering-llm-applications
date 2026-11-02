@@ -86,6 +86,8 @@ def test_database_checks_access_on_every_chunk(
 @pytest.mark.chapter(15)
 def test_reader_search_is_recorded(day0: Settings) -> None:
     with connect(day0.dsn) as conn:
+        conn.execute("DELETE FROM access_log")  # others search too
+    with connect(day0.dsn) as conn:
         [vector] = conn.execute(
             "SELECT embedding FROM chunks LIMIT 1"
         )

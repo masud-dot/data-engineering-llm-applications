@@ -11,6 +11,7 @@ from psycopg.conninfo import make_conninfo
 
 from llmdata.config import Settings, settings
 from llmdata.db import migrate, reset
+from llmdata.pipeline.__main__ import main as pipeline
 from llmdata.synthetic import load_claims, plan, write_files
 
 
@@ -62,3 +63,14 @@ def landed(pg: Settings, tmp_path: Path) -> Settings:
     write_files(corpus, tmp_path)
     load_claims(pg.source_dsn, corpus["claims"])
     return replace(pg, data_dir=tmp_path)
+
+
+@pytest.fixture
+def synced(
+    landed: Settings, monkeypatch: pytest.MonkeyPatch
+) -> Settings:
+    """A published day-0 index and the triage agent's claim facts."""
+    monkeypatch.setenv("LLMDATA_DATA_DIR", str(landed.data_dir))
+    for name in ("documents", "claim_facts"):
+        assert pipeline(["run", name, "--run-id", f"{name}-0"]) == 0
+    return landed

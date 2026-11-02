@@ -77,6 +77,10 @@ scores:
 datasets:
 	@$(UV) python -m llmdata.training show $(SET)
 
+triage-tools:
+	LLMDATA_AGENT_REGION=$(REGION) $(UV) --extra agents \
+	  python -m llmdata.agents.server
+
 run-local:
 	$(UV) python -m llmdata.pipeline run $(PIPELINE) --until $(UNTIL) \
 	  $(if $(RUN_ID),--run-id $(RUN_ID))

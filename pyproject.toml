@@ -21,6 +21,7 @@ dependencies = [
 local = ["fastembed>=0.9.1"]
 spark = ["pyspark>=4.2.0"]
 cdc = ["confluent-kafka>=2.16.0"]
+agents = ["mcp>=2.3.0"]
 
 [dependency-groups]
 dev = [
@@ -56,8 +57,14 @@ explicit_package_bases = true
 [[tool.mypy.overrides]]
 module = ["pdfplumber.*", "reportlab.*", "fastembed.*",
           "pgvector.*", "airflow.*", "py3langid", "pyspark.*",
-          "confluent_kafka.*"]
+          "confluent_kafka.*", "mcp.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Typed when the agents extra is installed; untyped without it.
+module = ["llmdata.agents.server"]
+disallow_untyped_decorators = false
+warn_unused_ignores = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

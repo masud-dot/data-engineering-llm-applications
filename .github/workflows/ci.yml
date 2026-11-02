@@ -51,6 +51,10 @@ jobs:
         run: >-
           uv run --frozen --extra spark pytest -q tests/spark 2>&1
           | tee -a ci.log
+      - name: Triage tools over MCP
+        run: >-
+          uv run --frozen --extra agents pytest -q
+          tests/integration/test_mcp_server.py 2>&1 | tee -a ci.log
       - name: Parser spike (S-3)
         run: |
           uv run --frozen python -m llmdata.synthetic --files-only \

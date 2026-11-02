@@ -1,0 +1,6 @@
+chapter = 18
+
+# Claim facts for the triage agent, whose status tool accepts data
+# up to 15 minutes old.
+[schedules.claim_facts]
+cron = "*/10 * * * *"

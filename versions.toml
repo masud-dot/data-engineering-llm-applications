@@ -12,6 +12,7 @@ debezium = "quay.io/debezium/connect:3.7.0.Final@sha256:84b85ccb2f63e88d910ae222
 confluent-kafka = "2.16.0"
 fastembed = "0.9.1"
 hypothesis = "6.170.12"
+mcp = "2.3.0"
 mypy = "2.4.0"
 numpy = "2.5.4"
 pdfplumber = "0.11.10"

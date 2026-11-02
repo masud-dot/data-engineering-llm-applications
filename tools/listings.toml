@@ -99,3 +99,8 @@
 "17.5" = { file = "src/llmdata/training/__init__.py", region = "decontaminate" }
 "17.6" = { file = "src/llmdata/training/__init__.py", region = "publish" }
 "17.7" = { file = "tests/integration/test_leakage.py", region = "leakage-tests" }
+"18.1" = { file = "deploy/sql/migrations/014_agents.sql", region = "agent-views" }
+"18.2" = { file = "src/llmdata/agents/__init__.py", region = "claim-facts-sync" }
+"18.3" = { file = "src/llmdata/agents/__init__.py", region = "claim-status-tool" }
+"18.4" = { file = "src/llmdata/agents/server.py", region = "mcp-server" }
+"18.5" = { file = "tests/integration/test_agent_tools.py", region = "agent-tests" }
