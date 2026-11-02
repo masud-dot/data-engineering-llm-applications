@@ -157,6 +157,7 @@ def main(argv: list[str] | None = None) -> int:
     k = prices["usage"]["k"]
     a, b = monthly(now, prices, k), monthly(new, prices, args.k or k)
     rows: list[tuple[str, Any, Any]] = [("", "now", "planned")]
+    rows += [("documents", now.documents, new.documents)]
     rows += [("chunks", now.chunks, new.chunks)]
     rows += [("characters", now.chars, new.chars)]
     rows += [("stored MB", now.bytes / 1e6, new.bytes / 1e6)]
