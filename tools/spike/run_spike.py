@@ -305,6 +305,10 @@ def s6() -> None:
                 run_dag("documents", {"embedder": embedder})
                 run_dag("eval_sets", {"embedder": embedder})
                 found[f"{embedder} {size}"] = " ".join(last_score())
+                if size == 900:  # milliseconds a question, as readers ask
+                    found[f"bench {embedder}"] = sh(
+                        f"{AIRFLOW} env EMBEDDER={embedder}"
+                        " /opt/venv/bin/python -m llmdata.cost bench")
     finally:
         chunk_size(900)
     versions = {row.split()[0] for row in found.values()}

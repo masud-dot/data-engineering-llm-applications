@@ -104,3 +104,8 @@
 "18.3" = { file = "src/llmdata/agents/__init__.py", region = "claim-status-tool" }
 "18.4" = { file = "src/llmdata/agents/server.py", region = "mcp-server" }
 "18.5" = { file = "tests/integration/test_agent_tools.py", region = "agent-tests" }
+"19.1" = { file = "src/llmdata/cost/prices.toml", region = "prices" }
+"19.2" = { file = "src/llmdata/cost/__init__.py", region = "plan" }
+"19.3" = { file = "src/llmdata/cost/__init__.py", region = "monthly-cost" }
+"19.4" = { file = "src/llmdata/cost/__init__.py", region = "bench" }
+"19.5" = { file = "tests/integration/test_cost.py", region = "cost-tests" }

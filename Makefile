@@ -77,6 +77,13 @@ scores:
 datasets:
 	@$(UV) python -m llmdata.training show $(SET)
 
+cost:
+	@$(UV) python -m llmdata.cost estimate $(if $(SIZE),--size $(SIZE)) \
+	  $(if $(K),--k $(K))
+
+bench:
+	@$(UV) python -m llmdata.cost bench
+
 triage-tools:
 	LLMDATA_AGENT_REGION=$(REGION) $(UV) --extra agents \
 	  python -m llmdata.agents.server

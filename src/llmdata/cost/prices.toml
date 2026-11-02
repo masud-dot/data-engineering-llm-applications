@@ -1,0 +1,19 @@
+# region: prices
+# Illustrative prices in pounds, to show the method: replace them
+# with your own contracts before trusting any total.
+dated = "2027-05-01"
+chars_per_token = 5.3  # measured: 92 tokens a 485-character chunk
+storage_gb_month = 0.12
+
+[per_million_tokens]
+embedding = 0.02  # 2,500 tokens/s on a £0.20-an-hour machine
+prompt = 2.40  # model input
+answer = 9.60  # model output
+
+[usage]  # Quillmere's assistant in production, per month
+documents = 52_000
+queries = 60_000
+k = 5  # chunks in each prompt
+answer_tokens = 250
+changed_share = 0.05  # documents changed, so re-embedded
+# endregion
