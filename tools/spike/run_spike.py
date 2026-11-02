@@ -306,7 +306,8 @@ def s6() -> None:
                 run_dag("eval_sets", {"embedder": embedder})
                 found[f"{embedder} {size}"] = " ".join(last_score())
                 if size == 900:  # milliseconds a question, as readers ask
-                    found[f"bench {embedder}"] = sh(
+                    bench = results["facts"].setdefault("search_bench", {})
+                    bench[embedder] = sh(
                         f"{AIRFLOW} env EMBEDDER={embedder}"
                         " /opt/venv/bin/python -m llmdata.cost bench")
     finally:
