@@ -109,3 +109,7 @@
 "19.3" = { file = "src/llmdata/cost/__init__.py", region = "monthly-cost" }
 "19.4" = { file = "src/llmdata/cost/__init__.py", region = "bench" }
 "19.5" = { file = "tests/integration/test_cost.py", region = "cost-tests" }
+"20.1" = { file = "src/llmdata/ops/limits.toml", region = "ops-limits" }
+"20.2" = { file = "src/llmdata/ops/__init__.py", region = "ops-checks" }
+"20.3" = { file = "docs/runbooks/removal-guard.md", region = "removal-guard" }
+"20.4" = { file = "tests/integration/test_ops.py", region = "ops-tests" }

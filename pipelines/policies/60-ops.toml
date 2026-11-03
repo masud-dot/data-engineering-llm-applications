@@ -1,0 +1,6 @@
+chapter = 20
+
+# Every target, checked every quarter of an hour; a failed check
+# fails the task, and the message names the runbooks to follow.
+[schedules.ops]
+cron = "*/15 * * * *"

@@ -24,6 +24,7 @@ def test_factory_builds_one_dag_per_pipeline(
         "claim_facts",
         "documents",
         "eval_sets",
+        "ops",
         "retry_demo",
         "summaries",
     }
@@ -49,6 +50,7 @@ def test_schedules_trigger_paused_by_default(
         "schedule__claim_facts",
         "schedule__documents",
         "schedule__eval_sets",
+        "schedule__ops",
     ]
     for dag in found.values():
         assert dag.is_paused_upon_creation and not dag.catchup

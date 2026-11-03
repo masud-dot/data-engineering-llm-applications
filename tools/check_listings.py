@@ -8,8 +8,8 @@ import sys
 import tomllib
 from pathlib import Path
 
-START = re.compile(r"^\s*(?:#|--)\s*region:\s*(\S+)\s*$")
-END = re.compile(r"^\s*(?:#|--)\s*endregion\s*$")
+START = re.compile(r"^\s*(?:#|--|<!--)\s*region:\s*(\S+)\s*(?:-->)?$")
+END = re.compile(r"^\s*(?:#|--|<!--)\s*endregion\s*(?:-->)?$")
 SAMPLE = "a = 1\n# region: demo\nb = 2\n\nc = 3\n# endregion\n"
 
 

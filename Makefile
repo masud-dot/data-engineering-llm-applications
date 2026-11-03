@@ -84,6 +84,13 @@ cost:
 bench:
 	@$(UV) python -m llmdata.cost bench
 
+ops-check:
+	@$(UV) python -m llmdata.ops check
+
+readiness:
+	$(MAKE) verify
+	$(MAKE) -s ops-check index-check lag scores datasets cost
+
 triage-tools:
 	LLMDATA_AGENT_REGION=$(REGION) $(UV) --extra agents \
 	  python -m llmdata.agents.server

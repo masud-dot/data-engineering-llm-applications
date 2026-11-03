@@ -1,0 +1,30 @@
+# region: ops-limits
+# The targets the data layer has promised, checked every 15 minutes.
+# A value over its limit fails; so does a missing value. Each name
+# is also its runbook: docs/runbooks/<name>.md.
+
+[run-stuck]
+query = """SELECT count(*) FROM ledger WHERE status = 'running'
+  AND started_at < now() - interval '2 hours'"""
+limit = 0
+unit = "runs running over two hours"
+
+[claim-facts]
+query = """SELECT extract(epoch FROM now() - max(read_at))
+  FROM agent.claim_facts"""
+limit = 900
+unit = "seconds since claim facts were read"
+
+[evaluation]
+query = """SELECT extract(epoch FROM now() - max(scored_at)) / 3600
+  FROM evals.scores"""
+limit = 26
+unit = "hours since the last evaluation score"
+
+[quality-gate]
+query = """SELECT count(*) FROM quality_results JOIN ledger
+  USING (run_id) WHERE accepted
+  AND started_at > now() - interval '7 days'"""
+limit = 0
+unit = "accepted failures in seven days"
+# endregion
