@@ -13,6 +13,12 @@ COPY --chown=airflow:0 pyproject.toml uv.lock README.md /opt/llmdata/
 RUN pip install --no-cache-dir uv==0.11.32 \
  && cd /opt/llmdata \
  && UV_PROJECT_ENVIRONMENT=/opt/venv UV_PYTHON_DOWNLOADS=never \
-    uv sync --frozen --no-dev --extra local --extra cdc --no-install-project \
+    uv sync --frozen --no-dev --extra local --no-install-project \
     --no-cache --python 3.12
 # endregion
+# The cdc profile's Kafka client (Chapter 11), added as its own layer
+# so the image's first sync stays as Chapter 3 printed it.
+RUN cd /opt/llmdata \
+ && UV_PROJECT_ENVIRONMENT=/opt/venv UV_PYTHON_DOWNLOADS=never \
+    uv sync --frozen --no-dev --extra local --extra cdc \
+    --no-install-project --no-cache --python 3.12
