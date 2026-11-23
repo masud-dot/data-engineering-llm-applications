@@ -11,6 +11,23 @@ failed check keeps its row and gains a corrective action and a rerun.
 | Build workspace | x86-64 Linux container | n/a | Ubuntu 24.04 | client only, no daemon |
 | GitHub Actions | ubuntu-24.04 runner, 4 CPUs | 16.8 GB | Linux 6.17 (Azure), glibc 2.39 | Engine 28.0.4 |
 
+## The finished pipeline
+
+The spike runs on every push. On commit 28125b9 (GitHub Actions,
+23 Nov 2026), with every chapter's stages:
+
+| Check | Criterion | Measured |
+|---|---|---|
+| Peak memory, all core containers | <= 6 GiB | 2.38 GiB (2.38-2.45 GiB across runs since the local-model bench) |
+| Full run, 520 documents, local model | <= 30 min on 4 CPUs | 157.5 s |
+| Images and volumes | <= 10 GB | 3.41 GB |
+| `make verify` against the running stack | passes | passed |
+| Two rebuilds | same index hash | 8aa412e59446 three times |
+| All spike checks (S-1 to S-6) | pass | 19 of 19 |
+
+The author's laptop figures below are from commit 90eca64 and are
+re-measured at the release tag.
+
 ## Spike results
 
 | Spike | Machine | Commit | Date | Result |
